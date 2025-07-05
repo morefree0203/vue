@@ -21,7 +21,8 @@ export default {
         errorCode: '验证码错误或已过期',
         id:"学工号",
         UserLogin:"用户登录",
-        AdminLogin:"管理员登录"
+        AdminLogin:"管理员登录",
+        freelogin:"7天免登录"
     },
     en: {
         username: 'Username',
@@ -44,6 +45,7 @@ export default {
         errorCode: 'Verification code error or expired',
         id:"ID",
         UserLogin:"User Login",
-        AdminLogin:"Admin Login"
+        AdminLogin:"Admin Login",
+        freelogin:"One week free"
     }
   };

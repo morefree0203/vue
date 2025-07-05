@@ -1,22 +1,30 @@
 import axios from 'axios'
 import { useToken } from '@/stores/token.js'
+import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
 
-
+const router = useRouter()
 
 const instance = axios.create({
   baseURL: 'http://localhost:8080/',
   // baseURL: '/api',
   timeout: 5000,
 })
+
+// 获取token（只从sessionStorage获取）
+const getToken = () => {
+  return sessionStorage.getItem('token')
+}
+
 // request 拦截器
 // 可以自请求发送前对请求做一些处理
 // 比如统一加token，对请求参数统一加密
 instance.interceptors.request.use(
     (config) => {
         config.headers['Content-Type'] = 'application/json;charset=utf-8'
-        let account = localStorage.getItem('account') ? JSON.parse(localStorage.getItem('account')) : null
-        if (account) {
-            config.headers['token'] = account.token // 设置请求头
+        const token = getToken()
+        if (token) {
+            config.headers['token'] = token // 设置请求头
         }
         return config
     },

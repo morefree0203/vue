@@ -2,6 +2,9 @@
 import { ref, onMounted } from 'vue';
 import { pageSearch, add, remove, update } from '@/api/student.js'
 import AutocompleteSearch from '@/components/homePage/student/Student-searchInput.vue';
+import SearchTable from '@/components/homePage/student/Student-SearchTable.vue';
+import SearchPagination from '@/components/homePage/student/Student-SearchPagination.vue';
+import HomeHeader from '@/components/common/HomeHeader.vue';
 
 
 //声明搜索数据
@@ -58,18 +61,32 @@ const searchStudent = async () => {
 </script>
 
 <template>
-  <div class="search-container">
-    <AutocompleteSearch ref="search" @add="addStudent" @search="searchStudent"/>
-  </div>
-  <div class="table-container">
-    <SearchTable ref="tableList" @delete="deleteStudent" @edit="editStudent" />
-  </div>
-  <div class="pagination-container">
-    <SearchPagination ref="pagination" @page-search="searchStudent"/>
+  <div class="home-container">
+    <HomeHeader />
+    <div class="content">
+      <div class="search-container">
+        <AutocompleteSearch ref="search" @add="addStudent" @search="searchStudent"/>
+      </div>
+      <div class="table-container">
+        <SearchTable ref="tableList" @delete="deleteStudent" @edit="editStudent" />
+      </div>
+      <div class="pagination-container">
+        <SearchPagination ref="pagination" @page-search="searchStudent"/>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped lang="less">
+.home-container {
+  min-height: 100vh;
+  background: #f5f8fd;
+}
+
+.content {
+  padding-top: 20px;
+}
+
 .search-container {
   position: absolute;
   top: 40px;

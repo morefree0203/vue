@@ -35,7 +35,7 @@
   <script setup>
   import {ElMessage} from 'element-plus'
   import request from "@/utils/request.js";
-  import { reactive, ref } from 'vue'
+  import { reactive, ref, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
 
   const remember = ref(false)
@@ -47,6 +47,22 @@
     role: 'student' // 默认选择普通用户
   })
 
+  // 页面加载时检查是否之前勾选了记住账号密码
+  onMounted(() => {
+    const rememberLogin = localStorage.getItem('rememberLogin')
+    if (rememberLogin === 'true') {
+      remember.value = true
+      // 自动填入保存的账号密码
+      const savedAccount = localStorage.getItem('savedAccount')
+      if (savedAccount) {
+        const accountData = JSON.parse(savedAccount)
+        account.id = accountData.id || ''
+        account.password = accountData.password || ''
+        account.role = accountData.role || 'student'
+      }
+    }
+  })
+
   const onSubmit = () => {
     // 清除之前的错误信息
     errorMessage.value = ''
@@ -54,7 +70,24 @@
 
     request.post('/api/login', account).then((res) => {
         if (res.code === '200') {
-          localStorage.setItem('account', JSON.stringify(res.data))
+          // 根据是否勾选记住账号密码来决定存储方式
+          if (remember.value) {
+            // 勾选了记住账号密码，保存账号密码到localStorage
+            localStorage.setItem('rememberLogin', 'true')
+            localStorage.setItem('savedAccount', JSON.stringify({
+              id: account.id,
+              password: account.password,
+              role: account.role
+            }))
+          } else {
+            // 未勾选记住账号密码，清除保存的账号密码
+            localStorage.removeItem('rememberLogin')
+            localStorage.removeItem('savedAccount')
+          }
+          
+          // 登录状态使用sessionStorage存储（会话存储，关闭浏览器后清除）
+          sessionStorage.setItem('token', res.data.token)
+          sessionStorage.setItem('account', JSON.stringify(res.data))
           
           if (res.data.role === 'admin') {
             router.push('/Home')
