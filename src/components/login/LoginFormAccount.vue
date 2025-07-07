@@ -14,8 +14,15 @@
       </div>
       <div class="input-group">
         <select v-model="account.role" class="login-select" required>
-          <option value="student">{{ $t('form.UserLogin') }}</option>
-          <option value="admin">{{ $t('form.AdminLogin') }}</option>
+          <option value="student">{{ $t('form.studentLogin') }}</option>
+          <option value="teacher">{{ $t('form.teacherLogin') }}</option>
+          <option value="supervisor">{{ $t('form.supervisorLogin') }}</option>
+          <option value="leader">{{ $t('form.leaderLogin') }}</option>
+          <option value="enterprise">{{ $t('form.enterpriseLogin') }}</option>
+          <option value="sysAdmin">{{ $t('form.sysAdminLogin') }}</option>
+          <option value="schoolAdmin">{{ $t('form.schoolAdminLogin') }}</option>
+          <option value="collegeAdmin">{{ $t('form.collegeAdminLogin') }}</option>
+          <option value="departmentAdmin">{{ $t('form.departmentAdminLogin') }}</option>
         </select>
       </div>
       <div class="form-options">
@@ -35,8 +42,13 @@
   <script setup>
   import {ElMessage} from 'element-plus'
   import request from "@/utils/request.js";
-  import { reactive, ref, onMounted } from 'vue'
-  import { useRouter } from 'vue-router'
+  import { reactive, ref, onMounted } from 'vue';
+  import { useRouter } from 'vue-router';
+  import { 
+    saveAccount,
+    loadSavedAccount,
+    clearSavedAccount
+  } from "@/utils/encrypted_data.js";
 
   const remember = ref(false)
   const errorMessage = ref('')
@@ -48,43 +60,49 @@
   })
 
   // 页面加载时检查是否之前勾选了记住账号密码
-  onMounted(() => {
-    const rememberLogin = localStorage.getItem('rememberLogin')
-    if (rememberLogin === 'true') {
-      remember.value = true
-      // 自动填入保存的账号密码
-      const savedAccount = localStorage.getItem('savedAccount')
-      if (savedAccount) {
-        const accountData = JSON.parse(savedAccount)
-        account.id = accountData.id || ''
-        account.password = accountData.password || ''
-        account.role = accountData.role || 'student'
+  onMounted(async () =>{
+    try {
+      const rememberLogin = localStorage.getItem('rememberLogin')
+      if (rememberLogin === 'true') {
+        remember.value = true
+        // 自动填入保存的账号密码
+        const accountData = await loadSavedAccount()
+        if (accountData) {
+          account.id = accountData.id || ''
+          account.password = accountData.password || ''
+          account.role = accountData.role || 'student'
+        }
       }
+    } catch (error) {
+      console.error('加载保存的账号信息失败:', error)
+      // 如果加载失败，清除可能损坏的数据
+      clearSavedAccount()
     }
   })
 
   const onSubmit = () => {
     // 清除之前的错误信息
     errorMessage.value = ''
-
-
-    request.post('/api/login', account).then((res) => {
+      console.log("begin")
+    request.post('/api/login', account).then(async (res) => {
         if (res.code === '200') {
           // 根据是否勾选记住账号密码来决定存储方式
           if (remember.value) {
-            // 勾选了记住账号密码，保存账号密码到localStorage
-            localStorage.setItem('rememberLogin', 'true')
-            localStorage.setItem('savedAccount', JSON.stringify({
-              id: account.id,
-              password: account.password,
-              role: account.role
-            }))
+            // 勾选了记住账号密码，加密保存账号密码
+            try {
+              await saveAccount({
+                id: account.id,
+                password: account.password,
+                role: account.role
+              })
+            } catch (error) {
+              console.error('保存账号信息失败:', error)
+              ElMessage.error('保存账号信息失败')
+            }
           } else {
             // 未勾选记住账号密码，清除保存的账号密码
-            localStorage.removeItem('rememberLogin')
-            localStorage.removeItem('savedAccount')
+            clearSavedAccount()
           }
-          
           // 登录状态使用sessionStorage存储（会话存储，关闭浏览器后清除）
           sessionStorage.setItem('token', res.data.token)
           sessionStorage.setItem('account', JSON.stringify(res.data))
@@ -96,11 +114,9 @@
           }
           ElMessage.success('登录成功')
         } else {
-          ElMessage.error(res.msg || '出错啦')
+          ElMessage.error(res.msg)
         }
       })
-
-
   }
   </script>
   

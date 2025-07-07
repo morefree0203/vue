@@ -1,14 +1,11 @@
 import axios from 'axios'
 import { useToken } from '@/stores/token.js'
 import { ElMessage } from 'element-plus'
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
 
 const instance = axios.create({
   baseURL: 'http://localhost:8080/',
   // baseURL: '/api',
-  timeout: 5000,
+  timeout: 50000000,
 })
 
 // 获取token（只从sessionStorage获取）
@@ -49,8 +46,11 @@ instance.interceptors.response.use(
     // 当权限验证不通过的时候给出提示
     if (res.code === '401') {
         ElMessage.error(res.msg)
+        // 清除无效的token
+        sessionStorage.removeItem('token')
+        sessionStorage.removeItem('account')
         // 跳转到登录页面
-        router.push('/login')
+        window.location.href = '/login'
     }
     return res
   },

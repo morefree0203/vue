@@ -1,9 +1,8 @@
-
 export default {
     zh: {
         username: '用户名',
         password: '密码',
-        remember: '记住账号密码',
+        remember: '记住账号',
         forgot: '忘记密码',
         loginBtn: '立即登录',
         loginTip: '温馨提示：登录账号为学工号、校园卡号、手机号，初始密码为身份证号后六位（如包含字母为大写）',
@@ -22,7 +21,16 @@ export default {
         id:"学工号",
         UserLogin:"用户登录",
         AdminLogin:"管理员登录",
-        freelogin:"7天免登录"
+        freelogin:"7天免登录",
+        studentLogin: "学生登录",
+        teacherLogin: "教师登录",
+        supervisorLogin: "督导登录",
+        leaderLogin: "领导登录",
+        enterpriseLogin: "企业登录",
+        sysAdminLogin: "系统运维管理员登录",
+        schoolAdminLogin: "校级管理员登录",
+        collegeAdminLogin: "院级管理员登录",
+        departmentAdminLogin: "系级管理员登录"
     },
     en: {
         username: 'Username',
@@ -46,6 +54,15 @@ export default {
         id:"ID",
         UserLogin:"User Login",
         AdminLogin:"Admin Login",
-        freelogin:"One week free"
+        freelogin:"One week free",
+        studentLogin: "Student Login",
+        teacherLogin: "Teacher Login",
+        supervisorLogin: "Supervisor Login",
+        leaderLogin: "Leader Login",
+        enterpriseLogin: "Enterprise Login",
+        sysAdminLogin: "System Admin Login",
+        schoolAdminLogin: "School Admin Login",
+        collegeAdminLogin: "College Admin Login",
+        departmentAdminLogin: "Department Admin Login"
     }
   };

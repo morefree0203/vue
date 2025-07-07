@@ -14,7 +14,6 @@ import LoginBanner from '@/components/login/LoginBanner.vue'
 import LoginPanel from '@/components/login/LoginPanel.vue'
 import LoginFooter from '@/components/login/LoginFooter.vue'
 import Header from '@/components/common/Header.vue'
-
 </script>
 
 <style scoped>
