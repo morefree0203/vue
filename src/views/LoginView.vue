@@ -1,6 +1,6 @@
 <template>
   <div class="login-page">
-    <Header />
+    <Header/>
       <div class="login-main">
         <LoginBanner/>
         <LoginPanel />
@@ -18,7 +18,7 @@ import Header from '@/components/common/Header.vue'
 
 <style scoped>
 .login-page {
-  min-height: 98vh;
+  min-height: 100dvh;
   background: #f5f8fd;
   display: flex;
   flex-direction: column;
@@ -71,7 +71,7 @@ import Header from '@/components/common/Header.vue'
    }
   .login-page {
      height: 100%;
-     min-height: 100vh;
+     min-height: 100dvh;
      display: flex;
      flex-direction: column;
      background: #f5f8fd;

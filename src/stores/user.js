@@ -14,8 +14,8 @@ export const useUserStore = defineStore('user', () => {
   // 用户名
   const username = computed(() => userInfo.value?.username)
   
-  // 是否已登录
-  const isLoggedIn = computed(() => !!userInfo.value)
+  // // 是否已登录
+  // const isLoggedIn = computed(() => !!userInfo.value)
   
   // 设置用户信息
   const setUserInfo = (info) => {
@@ -53,10 +53,57 @@ export const useUserStore = defineStore('user', () => {
       'supervisor': '督导',
       'leader': '领导',
       'enterprise': '企业',
-      'admin': '管理员',
+      'school_admin': '校级管理员',
+      'college_admin': '院级管理员',
+      'department_admin': '系级管理员',
       'system_admin': '系统管理员'
     }
     return roleNames[role] || role
+  }
+  
+  // 获取管理员级别
+  const getAdminLevel = () => {
+    const role = userInfo.value?.role
+    if (role === 'system_admin') return 'system'
+    if (role === 'school_admin') return 'school'
+    if (role === 'college_admin') return 'college'
+    if (role === 'department_admin') return 'department'
+    return null
+  }
+  
+  // 检查是否是管理员
+  const isAdmin = computed(() => {
+    const role = userInfo.value?.role
+    return ['school_admin', 'college_admin', 'department_admin', 'system_admin'].includes(role)
+  })
+  
+  // 检查是否是系统管理员
+  const isSystemAdmin = computed(() => userInfo.value?.role === 'system_admin')
+  
+  // 检查是否是校级管理员
+  const isSchoolAdmin = computed(() => userInfo.value?.role === 'school_admin')
+  
+  // 检查是否是院级管理员
+  const isCollegeAdmin = computed(() => userInfo.value?.role === 'college_admin')
+  
+  // 检查是否是系级管理员
+  const isDepartmentAdmin = computed(() => userInfo.value?.role === 'department_admin')
+  
+  // 获取管理范围
+  const getManageScope = () => {
+    const role = userInfo.value?.role
+    switch (role) {
+      case 'system_admin':
+        return '全校'
+      case 'school_admin':
+        return '全校'
+      case 'college_admin':
+        return userInfo.value?.departmentName || '本院系'
+      case 'department_admin':
+        return userInfo.value?.departmentName || '本专业'
+      default:
+        return '无'
+    }
   }
   
   // 初始化用户信息（从sessionStorage）
@@ -64,24 +111,33 @@ export const useUserStore = defineStore('user', () => {
     const accountStr = sessionStorage.getItem('account')
     if (accountStr) {
       try {
-        userInfo.value = JSON.parse(accountStr)
+        const userData = JSON.parse(accountStr)
+        userInfo.value = userData
       } catch (error) {
         console.error('解析用户信息失败:', error)
         clearUserInfo()
       }
     }
   }
+  {persist: true}
   
+
   return {
     userInfo,
     userRole,
     userId,
     username,
-    isLoggedIn,
+    isAdmin,
+    isSystemAdmin,
+    isSchoolAdmin,
+    isCollegeAdmin,
+    isDepartmentAdmin,
     setUserInfo,
     clearUserInfo,
     hasPermission,
     getRoleDisplayName,
+    getAdminLevel,
+    getManageScope,
     initUserInfo
   }
 }) 

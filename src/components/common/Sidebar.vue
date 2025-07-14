@@ -1,5 +1,6 @@
 <template>
   <div class="sidebar">
+
     <el-menu
       :default-active="activeMenu"
       class="sidebar-menu"
@@ -9,7 +10,9 @@
       :collapse="isCollapse"
       router
     >
+
       <template v-for="menu in filteredMenus" :key="menu.path">
+      
         <el-sub-menu v-if="menu.children && menu.children.length > 0" :index="menu.path">
           <template #title>
             <el-icon><component :is="menu.icon" /></el-icon>
@@ -35,7 +38,9 @@
           <span>{{ menu.title }}</span>
         </el-menu-item>
       </template>
+
     </el-menu>
+
   </div>
 </template>
 
@@ -53,7 +58,8 @@ import {
   ChatDotRound,
   View,
   Edit,
-  List
+  List,
+  OfficeBuilding
 } from '@element-plus/icons-vue'
 
 const route = useRoute()
@@ -68,127 +74,193 @@ const menus = [
   {
     path: '/dashboard',
     title: '首页',
-    icon: 'House',
-    roles: ['student', 'teacher', 'supervisor', 'leader', 'enterprise', 'admin', 'system_admin']
+    icon: House,
+    roles: ['student', 'teacher', 'supervisor', 'leader', 'enterprise', 'school_admin', 'college_admin', 'department_admin', 'system_admin']
   },
+
+
   {
     path: '/course',
     title: '课程管理',
-    icon: 'Document',
-    roles: ['student', 'teacher', 'supervisor', 'leader', 'enterprise', 'admin', 'system_admin'],
+    icon: Document,
+    roles: ['student', 'teacher', 'supervisor', 'leader', 'enterprise', 'school_admin', 'college_admin', 'department_admin'],
     children: [
+      // {
+      //   path: '/course/list',
+      //   title: '课程列表',
+      //   icon: List,
+      //   roles: ['student', 'teacher', 'supervisor', 'leader', 'enterprise', 'school_admin', 'college_admin', 'department_admin']
+      // },
       {
-        path: '/course/list',
-        title: '课程列表',
-        icon: 'List',
-        roles: ['student', 'teacher', 'supervisor', 'leader', 'enterprise', 'admin', 'system_admin']
+        path: '/course/my-courses',
+        title: '我的课程',
+        icon: Document,
+        roles: ['student', 'teacher']
       },
-      {
-        path: '/course/manage',
-        title: '课程管理',
-        icon: 'Edit',
-        roles: ['admin', 'system_admin']
-      }
+      // 校级管理员功能
+      // {
+      //   path: '/course/info',
+      //   title: '课程信息管理',
+      //   icon: Edit,
+      //   roles: ['school_admin']
+      // },
+      // // 院级管理员功能
+      // {
+      //   path: '/course/college',
+      //   title: '院系课程管理',
+      //   icon: Edit,
+      //   roles: ['college_admin']
+      // },
+      // // 系级管理员功能
+      // {
+      //   path: '/course/department',
+      //   title: '专业课程管理',
+      //   icon: Edit,
+      //   roles: ['department_admin']
+      // }
     ]
   },
+
+
+
   {
     path: '/evaluation',
     title: '教学评价',
-    icon: 'Star',
-    roles: ['student', 'teacher', 'supervisor', 'leader', 'enterprise', 'admin', 'system_admin'],
+    icon: Star,
+    roles: ['student', 'teacher', 'supervisor', 'leader', 'enterprise', 'school_admin', 'college_admin', 'department_admin'],
     children: [
       {
         path: '/evaluation/student',
         title: '学生评价',
-        icon: 'User',
+        icon: User,
         roles: ['student']
       },
       {
         path: '/evaluation/peer',
         title: '同行评价',
-        icon: 'ChatDotRound',
+        icon: ChatDotRound,
         roles: ['teacher']
       },
       {
         path: '/evaluation/supervisor',
         title: '督导评价',
-        icon: 'View',
+        icon: View,
         roles: ['supervisor']
       },
       {
         path: '/evaluation/leader',
         title: '领导评价',
-        icon: 'View',
+        icon: View,
         roles: ['leader']
       },
       {
         path: '/evaluation/enterprise',
         title: '企业评价',
-        icon: 'View',
+        icon: View,
         roles: ['enterprise']
       },
       {
         path: '/evaluation/manage',
         title: '评价管理',
-        icon: 'Edit',
-        roles: ['admin', 'system_admin']
+        icon: Edit,
+        roles: ['school_admin', 'college_admin', 'department_admin']
+      },
+      {
+        path: '/evaluation/indicators',
+        title: '评价指标管理',
+        icon: Setting,
+        roles: ['school_admin']
+      }
+    ]
+  },
+  {
+    path: '/organization',
+    title: '组织管理',
+    icon: OfficeBuilding,
+    roles: ['school_admin', 'college_admin', 'department_admin'], // 三类管理员都可见
+    children: [
+      {
+        path: '/organization/college',
+        title: '学院管理',
+        icon: OfficeBuilding,
+        roles: ['school_admin', 'college_admin'] // 校级、院级管理员
+      },
+      {
+        path: '/organization/department',
+        title: '系管理',
+        icon: OfficeBuilding,
+        roles: ['school_admin', 'college_admin', 'department_admin'] // 三类管理员
+      },
+      {
+        path: '/organization/major',
+        title: '专业管理',
+        icon: OfficeBuilding,
+        roles: ['school_admin', 'college_admin', 'department_admin'] // 三类管理员
+      },
+      {
+        path: '/organization/class',
+        title: '班级管理',
+        icon: OfficeBuilding,
+        roles: ['school_admin', 'college_admin', 'department_admin'] // 三类管理员
       }
     ]
   },
   {
     path: '/statistics',
     title: '统计分析',
-    icon: 'DataAnalysis',
-    roles: ['teacher', 'admin', 'system_admin'],
+    icon: DataAnalysis,
+    roles: ['teacher', 'school_admin', 'college_admin', 'department_admin'],
     children: [
       {
         path: '/statistics/evaluation',
         title: '评价统计',
-        icon: 'DataAnalysis',
-        roles: ['teacher', 'admin', 'system_admin']
+        icon: DataAnalysis,
+        roles: ['teacher', 'school_admin', 'college_admin', 'department_admin']
       },
       {
         path: '/statistics/course',
         title: '课程统计',
-        icon: 'DataAnalysis',
-        roles: ['admin', 'system_admin']
+        icon: DataAnalysis,
+        roles: ['school_admin', 'college_admin', 'department_admin']
       },
       {
         path: '/statistics/user',
         title: '用户统计',
-        icon: 'DataAnalysis',
-        roles: ['admin', 'system_admin']
+        icon: DataAnalysis,
+        roles: ['school_admin', 'college_admin', 'department_admin']
       }
     ]
   },
   {
     path: '/admin',
     title: '系统管理',
-    icon: 'Setting',
-    roles: ['admin', 'system_admin'],
+    icon: Setting,
+    roles: ['school_admin', 'college_admin', 'department_admin', 'system_admin'],
     children: [
       {
         path: '/admin/user',
         title: '用户管理',
-        icon: 'User',
-        roles: ['admin', 'system_admin']
+        icon: User,
+        roles: ['school_admin', 'college_admin', 'department_admin']
       },
+      // 哪个角色可以做什么
       {
         path: '/admin/role',
-        title: '角色管理',
-        icon: 'Setting',
+        title: '角色权限管理',
+        icon: Setting,
         roles: ['system_admin']
       },
       {
-        path: '/admin/department',
-        title: '院系管理',
-        icon: 'Setting',
-        roles: ['admin', 'system_admin']
+        path: '/admin/permission',
+        title: '权限分配',
+        icon: Setting,
+        roles: ['school_admin', 'college_admin', 'department_admin']
       },
+      // 评教时间段、匿名设置 系统公告
       {
         path: '/admin/system',
         title: '系统设置',
-        icon: 'Setting',
+        icon: Setting,
         roles: ['system_admin']
       }
     ]
@@ -200,17 +272,15 @@ const filteredMenus = computed(() => {
   return menus.filter(menu => hasPermission(menu.roles))
 })
 
+
+
 // 检查权限
 const hasPermission = (roles) => {
-  const userRole = userStore.userInfo?.role
   
+  const userRole = userStore.userInfo?.role
+
   if (!userRole) {
     return false
-  }
-  
-  // 系统管理员拥有所有权限
-  if (userRole === 'system_admin') {
-    return true
   }
   
   if (Array.isArray(roles)) {
@@ -219,11 +289,13 @@ const hasPermission = (roles) => {
     return roles === userRole
   }
 }
+
+
 </script>
 
 <style scoped>
 .sidebar {
-  height: 100vh;
+  height: 100%;
   background-color: #304156;
 }
 
@@ -241,6 +313,11 @@ const hasPermission = (roles) => {
   line-height: 50px;
 }
 
+.el-menu-item.is-active {
+  background-color: #1890ff !important; /* 高亮背景色 */
+  color: #fff !important;               /* 高亮文字色 */
+}
+  
 .el-menu-item:hover, .el-sub-menu__title:hover {
   background-color: #263445 !important;
 }

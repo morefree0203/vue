@@ -10,6 +10,8 @@ import { createPinia } from 'pinia'
 // 引入 Element Plus
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
+import { useUserStore } from '@/stores/user'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 const messages = {
   zh: {
@@ -32,11 +34,16 @@ const i18n = createI18n({
   messages
 })
 
-const piana = createPinia(App)
 const app = createApp(App)
+export const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
+
 app.use(i18n)
+app.use(pinia)
 app.use(router)
-app.use(piana)
+
 // 使用 Element Plus
 app.use(ElementPlus)
+
+
 app.mount('#app')

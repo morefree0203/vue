@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div v-if="hasPermission">
     <slot></slot>
   </div>
@@ -40,11 +40,6 @@ const hasPermission = computed(() => {
     return false
   }
   
-  // 系统管理员拥有所有权限
-  if (userRole === 'system_admin') {
-    return true
-  }
-  
   // 检查角色权限
   if (Array.isArray(props.roles)) {
     return props.roles.includes(userRole)
@@ -59,4 +54,4 @@ const hasPermission = computed(() => {
   padding: 20px;
   text-align: center;
 }
-</style> 
+</style>  -->

@@ -6,11 +6,11 @@
     </div>
     <div class="right-section">
       <div class="user-info">
-        <span class="welcome">欢迎，{{ userInfo.name || userInfo.id }}</span>
-        <span class="role">({{ userInfo.role === 'admin' ? '管理员' : '学生' }})</span>
+        <span class="welcome">欢迎，{{ userInfo?.id || userInfo?.username || '用户' }}</span>
+        <span class="role">({{ userStore.getRoleDisplayName(userInfo?.role) }})</span>
       </div>
       <button class="logout-btn" @click="handleLogout">退出登录</button>
-      <button class="lang-btn" @click="toggleLang">{{ $t(currentLang === 'zh' ? 'header.english' : 'header.chinese') }}</button>
+      <!-- <button class="lang-btn" @click="toggleLang">{{ $t(currentLang === 'zh' ? 'header.english' : 'header.chinese') }}</button> -->
     </div>
   </div>
 </template>
@@ -20,23 +20,18 @@ import { useI18n } from 'vue-i18n'
 import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { useUserStore } from '@/stores/user'
 
 const { locale } = useI18n()
 const router = useRouter()
 const currentLang = computed(() => locale.value)
-const userInfo = ref({})
+const userStore = useUserStore()
+// 使用 computed 来响应式获取 userInfo
+const userInfo = computed(() => userStore.userInfo)
 
-function toggleLang() {
-  locale.value = locale.value === 'zh' ? 'en' : 'zh'
-}
-
-// 获取用户信息
-const getUserInfo = () => {
-  const accountStr = sessionStorage.getItem('account')
-  if (accountStr) {
-    userInfo.value = JSON.parse(accountStr)
-  }
-}
+// function toggleLang() {
+//   locale.value = locale.value === 'zh' ? 'en' : 'zh'
+// }
 
 // 退出登录
 const handleLogout = () => {
@@ -48,14 +43,11 @@ const handleLogout = () => {
   router.push('/login')
 }
 
-onMounted(() => {
-  getUserInfo()
-})
 </script>
 
 <style scoped>
 .home-header {
-  height: 76px;
+  height: 8vh;
   background: #085bb6;
   display: flex;
   align-items: center;

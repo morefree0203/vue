@@ -19,10 +19,10 @@
           <option value="supervisor">{{ $t('form.supervisorLogin') }}</option>
           <option value="leader">{{ $t('form.leaderLogin') }}</option>
           <option value="enterprise">{{ $t('form.enterpriseLogin') }}</option>
-          <option value="sysAdmin">{{ $t('form.sysAdminLogin') }}</option>
-          <option value="schoolAdmin">{{ $t('form.schoolAdminLogin') }}</option>
-          <option value="collegeAdmin">{{ $t('form.collegeAdminLogin') }}</option>
-          <option value="departmentAdmin">{{ $t('form.departmentAdminLogin') }}</option>
+          <option value="system_admin">{{ $t('form.sysAdminLogin') }}</option>
+          <option value="school_admin">{{ $t('form.schoolAdminLogin') }}</option>
+          <option value="college_admin">{{ $t('form.collegeAdminLogin') }}</option>
+          <option value="department_admin">{{ $t('form.departmentAdminLogin') }}</option>
         </select>
       </div>
       <div class="form-options">
@@ -41,23 +41,25 @@
   
   <script setup>
   import {ElMessage} from 'element-plus'
-  import request from "@/utils/request.js";
-  import { reactive, ref, onMounted } from 'vue';
-  import { useRouter } from 'vue-router';
-  import { 
-    saveAccount,
-    loadSavedAccount,
-    clearSavedAccount
-  } from "@/utils/encrypted_data.js";
+import request from "@/utils/request.js";
+import { reactive, ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user';
+import { 
+  saveAccount,
+  loadSavedAccount,
+  clearSavedAccount
+} from "@/utils/encrypted_data.js";
 
   const remember = ref(false)
-  const errorMessage = ref('')
-  const router = useRouter()
-  const account = reactive({
-    id: '',
-    password: '',
-    role: 'student' // 默认选择普通用户
-  })
+const errorMessage = ref('')
+const router = useRouter()
+const userStore = useUserStore()
+const account = reactive({
+  id: '',
+  password: '',
+  role: 'student' // 默认选择普通用户
+})
 
   // 页面加载时检查是否之前勾选了记住账号密码
   onMounted(async () =>{
@@ -83,7 +85,6 @@
   const onSubmit = () => {
     // 清除之前的错误信息
     errorMessage.value = ''
-      console.log("begin")
     request.post('/api/login', account).then(async (res) => {
         if (res.code === '200') {
           // 根据是否勾选记住账号密码来决定存储方式
@@ -106,6 +107,10 @@
           // 登录状态使用sessionStorage存储（会话存储，关闭浏览器后清除）
           sessionStorage.setItem('token', res.data.token)
           sessionStorage.setItem('account', JSON.stringify(res.data))
+          
+          // 更新 store 中的用户信息
+          userStore.setUserInfo(res.data)
+          
           
           if (res.data.role === 'admin') {
             router.push('/Home')
