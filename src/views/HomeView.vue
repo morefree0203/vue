@@ -36,11 +36,9 @@ import HomeHeader from '@/components/common/HomeHeader.vue'
 }
 .header {
   height: 8%;
-  /* min-height: 48px;
-  max-height: 80px; */
   background: #fff;
   box-shadow: 0 2px 8px #f0f1f2;
-  padding: 0 24px;
+  /* padding: 0 24px; */
 }
 .main-content {
   /* height: calc(100vh - 8vh); */
@@ -48,5 +46,7 @@ import HomeHeader from '@/components/common/HomeHeader.vue'
   background: #fff;
   overflow: auto;
   padding: 0;
+  background: #f5f6fa;        /* 浅灰色背景，提升层次感 */
+  
 }
 </style>

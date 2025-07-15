@@ -7,7 +7,16 @@ import request from '@/utils/request'
  * @param {string|number} userId 用户ID
  * @returns {Promise}
  */
-export function fetchStudentCourses(studentId,academic_year, semester) {
-    return request.get('/student/my-courses', { params: { studentId, academic_year, semester} })
+export function fetchStudentCourses(studentId,academicYear, semester) {
+   
+    return request.get('/student/my-courses', { params: { studentId, academicYear, semester} })
   }
+
+
+export function fetchStudentEvaluationTasks(studentId, academicYear, semester) {
+  console.log(222)
+  return request.get('/student/evaluation-tasks', {
+    params: { studentId, academicYear, semester }
+  })
+}
   

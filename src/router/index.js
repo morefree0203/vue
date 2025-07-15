@@ -16,6 +16,10 @@ const routes = [
     component: HomeView,
     children: [
       {
+        path: '',                // 关键：空路径，表示 /Home
+        redirect: '/dashboard'   // 自动跳转到 /dashboard
+      },
+      {
         path: '/dashboard',
         name: 'Dashboard',
         component: () => import('@/views/DashboardView.vue')
@@ -58,7 +62,12 @@ const routes = [
       },
       // 教学评价
       {
-        path: '/evaluation/student',
+        path: '/evaluation/student-tasks',
+        name: 'StudentEvaluationTasks',
+        component: () => import('@/views/evaluation/StudentEvaluationTasks.vue')
+      },
+      {
+        path: '/evaluation/student/:assignmentId',
         name: 'StudentEvaluation',
         component: () => import('@/views/evaluation/StudentEvaluation.vue')
       },
@@ -91,6 +100,11 @@ const routes = [
         path: '/evaluation/indicators',
         name: 'EvaluationIndicators',
         component: () => import('@/views/evaluation/EvaluationIndicatorsView.vue')
+      },
+      {
+        path: '/evaluation/task-management',
+        name: 'EvaluationTaskManagement',
+        component: () => import('@/views/evaluation/EvaluationTaskManagement.vue')
       },
       // 组织管理
       {
@@ -260,7 +274,7 @@ router.beforeEach(async (to, from, next) => {
     } else {
       const isValid = await updateUserInfo(token)
       if (isValid) {
-        next()
+  next()
       } else {
         next('/login')
       }

@@ -22,6 +22,7 @@ instance.interceptors.request.use(
         const token = getToken()
         if (token) {
             config.headers['token'] = token // 设置请求头
+            console.log('请求即将发送，token=', token, config.url)
         }
         return config
     },
@@ -33,9 +34,7 @@ instance.interceptors.request.use(
 // 添加响应拦截器
 instance.interceptors.response.use(
   function (response) {
-    console.log(222)
     let res = response.data
-    console.log(res)
     // 如果是返回的文件
     if (response.config.responseType === 'blob') {
         return res

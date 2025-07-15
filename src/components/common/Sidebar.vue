@@ -67,7 +67,11 @@ const userStore = useUserStore()
 const isCollapse = ref(false)
 
 // 当前激活的菜单
-const activeMenu = computed(() => route.path)
+const activeMenu = computed(() => {
+  // 如果当前路径是 /Home 或 /home，返回 /dashboard，否则返回当前路径
+  // route.path='/dashboard'
+  return route.path === '/Home'  ? '/dashboard' : route.path
+})
 
 // 菜单配置
 const menus = [
@@ -130,8 +134,8 @@ const menus = [
     roles: ['student', 'teacher', 'supervisor', 'leader', 'enterprise', 'school_admin', 'college_admin', 'department_admin'],
     children: [
       {
-        path: '/evaluation/student',
-        title: '学生评价',
+        path: '/evaluation/student-tasks',
+        title: '我的任务',
         icon: User,
         roles: ['student']
       },
@@ -170,6 +174,12 @@ const menus = [
         title: '评价指标管理',
         icon: Setting,
         roles: ['school_admin']
+      },
+      {
+        path: '/evaluation/task-management',
+        title: '评价任务管理',
+        icon: Document,
+        roles: ['school_admin', 'college_admin', 'department_admin']
       }
     ]
   },
@@ -278,7 +288,7 @@ const filteredMenus = computed(() => {
 const hasPermission = (roles) => {
   
   const userRole = userStore.userInfo?.role
-
+  
   if (!userRole) {
     return false
   }
@@ -317,7 +327,7 @@ const hasPermission = (roles) => {
   background-color: #1890ff !important; /* 高亮背景色 */
   color: #fff !important;               /* 高亮文字色 */
 }
-  
+
 .el-menu-item:hover, .el-sub-menu__title:hover {
   background-color: #263445 !important;
 }

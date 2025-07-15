@@ -34,7 +34,7 @@ import { fetchStudentCourses } from '@/api/student'
 const userStore = useUserStore()
 const myCourses = ref([])
 // 当前学年学期
-const academic_year = getCurrentAcademicYear()
+const academicYear = getCurrentAcademicYear()
 const semester = getCurrentSemester()
 /**
  * 获取当前用户的课程列表
@@ -45,9 +45,9 @@ const semester = getCurrentSemester()
   try {
     let res 
     if (userStore.userRole == 'student') {
-      res = await fetchStudentCourses(userStore.userId,academic_year, semester)
+      res = await fetchStudentCourses(userStore.userId,academicYear, semester)
     } else if (userStore.userRole === 'teacher') {
-      res = await fetchTeacherCourses(userStore.userId,academic_year, semester)
+      res = await fetchTeacherCourses(userStore.userId,academicYear, semester)
     }
 
     if(res.code=='200')
