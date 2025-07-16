@@ -24,6 +24,7 @@
           min-width="100"
           :formatter="formatStatus"
         />
+        <!-- 在 <template #default="scope"> 里，scope.row 就是当前这一行的数据对象（即 taskList 里的某一项）。 -->
         <el-table-column label="操作" min-width="120">
           <template #default="scope">
             <el-button
@@ -32,7 +33,7 @@
               :disabled="scope.row.status === 1"
               @click="goToEvaluation(scope.row)"
             >
-              {{ scope.row.status === 1 ? '已完成' : '去评价' }}
+              {{ scope.row.status === 1 ? '已评价' : '去评价' }}
             </el-button>
           </template>
         </el-table-column>
@@ -62,7 +63,6 @@ const fetchTasks = async () => {
     // 这里调用后端API获取任务列表
     const res = await fetchStudentEvaluationTasks(userStore.userId, academicYear, semester)
     taskList.value = res.data
-    // 示例数据
   } catch (e) {
     ElMessage.error('获取评价任务失败')
   }
@@ -75,7 +75,7 @@ const formatStatus = (row, column, cellValue) => {
 
 const goToEvaluation = (row) => {
   // 跳转到具体评价页面，带上 assignmentId
-  router.push({ path: `/student/evaluation/${row.id}` })
+  router.push({ path: `/evaluation/student/${row.assignmentId}` })
 }
 
 onMounted(() => {

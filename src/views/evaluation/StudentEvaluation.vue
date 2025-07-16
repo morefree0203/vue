@@ -70,15 +70,23 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useRoute, useRouter } from 'vue-router'
+import { getEvaluationAssignmentDetail } from '@/api/student'
+import { submitStudentEvaluation } from '@/api/student'
 
+// useRoute() 得到的是当前路由对象（route），没有 push 方法。
+// useRouter() 得到的是路由实例（router），有 push 方法。
+const route = useRoute()
+const router = useRouter()
+const assignmentId = route.params.assignmentId
 const formRef = ref()
 const submitting = ref(false)
 
 // 课程信息（实际应由父组件或API传入）
 const courseInfo = ref({
-  courseName: '高等数学',
-  teacherName: '张老师',
-  courseId: '123'
+  courseName: '',
+  teacherName: '',
+  courseId: ''
 })
 
 // 动态评价指标（实际应从后端API获取）
@@ -88,7 +96,6 @@ const indicatorList = ref([])
 const evaluationForm = reactive({
   scores: {},         // { [indicatorId]: 分数 }
   openComment: '',    // 开放式评价
-  isAnonymous: true // 默认匿名
 })
 
 // 表单验证规则
@@ -98,18 +105,15 @@ const rules = {
   ]
 }
 
-// 获取评价指标（模拟API）
-const fetchIndicators = async () => {
-  // 这里应调用后端API获取指标
-  indicatorList.value = [
-    { id: 1, name: '教学态度', maxScore: 10 },
-    { id: 2, name: '教学方法', maxScore: 10 },
-    { id: 3, name: '教学效果', maxScore: 10 },
-    { id: 4, name: '普通话水平', maxScore: 10 },
-    { id: 5, name: '作业评阅', maxScore: 10 },
-    { id: 6, name: '师生交流', maxScore: 10 },
-    { id: 7, name: '准时上下课', maxScore: 10 },
-  ]
+// 获取评价指标和课程信息
+const fetchAssignmentDetail = async () => {
+  if (!assignmentId) {
+    ElMessage.error('未获取到评价任务ID')
+    return
+  }
+  const res = await getEvaluationAssignmentDetail(assignmentId)
+  courseInfo.value = res.data.courseInfo || {}
+  indicatorList.value = res.data.indicatorList || []
   // 初始化分数
   indicatorList.value.forEach(ind => {
     evaluationForm.scores[ind.id] = 0
@@ -125,10 +129,25 @@ const submitEvaluation = async () => {
     }
   }
   submitting.value = true
-  // 这里调用API提交评价
-  // await submitStudentEvaluation({ ...evaluationForm, courseId: courseInfo.value.courseId })
-  ElMessage.success('评价提交成功！')
-  resetForm()
+
+  const postData = {
+    scores: indicatorList.value.map(ind => ({
+      indicatorId: ind.id,
+      score: evaluationForm.scores[ind.id]
+    })),
+    openComment: evaluationForm.openComment
+  }
+
+  try {
+    console.log(111)
+    await submitStudentEvaluation(assignmentId,postData)
+    console.log(333)
+    ElMessage.success('评价提交成功！')
+    router.push('/evaluation/student-tasks')
+  } catch (e) {
+    console.error('catch error:', e)
+    ElMessage.error('提交失败，请重试')
+  }
   submitting.value = false
 }
 
@@ -137,11 +156,10 @@ const resetForm = () => {
     evaluationForm.scores[ind.id] = 0
   })
   evaluationForm.openComment = ''
-  evaluationForm.isAnonymous = true
 }
 
 onMounted(() => {
-  fetchIndicators()
+  fetchAssignmentDetail()
 })
 </script>
 

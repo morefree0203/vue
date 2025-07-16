@@ -68,7 +68,7 @@ const routes = [
       },
       {
         path: '/evaluation/student/:assignmentId',
-        name: 'StudentEvaluation',
+        name: 'StudentEvaluation',  
         component: () => import('@/views/evaluation/StudentEvaluation.vue')
       },
       {
