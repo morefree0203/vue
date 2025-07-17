@@ -30,10 +30,17 @@ const routes = [
         name: 'CourseList',
         component: () => import('@/views/course/CourseListView.vue')
       },
+      // 通用查看我的课程接口 不同角色的数据获取在内部判断
       {
         path: '/course/my-courses',
         name: 'MyCourses',
         component: () => import('@/views/course/MyCoursesView.vue')
+      },
+      // 老师查看自己的课程评价详情的接口
+      {
+        path: '/course/evaluation/:courseId',
+        name: 'CourseEvaluationDetail',
+        component: () => import('@/views/course/CourseEvaluationDetail.vue')
       },
       {
         path: '/course/info',

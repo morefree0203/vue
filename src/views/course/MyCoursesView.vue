@@ -21,6 +21,15 @@
       <el-table-column prop="academicYear" label="学年" width="110" align="center" />
       <el-table-column prop="semester" label="学期" width="80" align="center" />
       <el-table-column prop="courseType" label="课程类型" width="100" align="center" />
+      <el-table-column label="操作" width="120" align="center" v-if="userStore.userRole === 'teacher'">
+      <template #default="scope">
+        <el-button
+          type="primary"
+          size="small"
+          @click="viewCourseEvaluation(scope.row)">
+          查看评价</el-button>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>
@@ -30,12 +39,23 @@ import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getCurrentAcademicYear, getCurrentSemester } from '@/utils/date'
 import { useUserStore } from '@/stores/user'
-import { fetchStudentCourses } from '@/api/student'
+import { fetchStudentCourses} from '@/api/student'
+import { fetchTeacherCourses } from '@/api/teacher'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const userStore = useUserStore()
 const myCourses = ref([])
 // 当前学年学期
 const academicYear = getCurrentAcademicYear()
 const semester = getCurrentSemester()
+
+function viewCourseEvaluation(row) {
+  console.log(row.courseId)
+  console.log(row)
+  router.push({ path: `/course/evaluation/${row.courseId}` })
+}
+
+
 /**
  * 获取当前用户的课程列表
  * 学生：选修课程，教师：授课课程
@@ -46,7 +66,7 @@ const semester = getCurrentSemester()
     let res 
     if (userStore.userRole == 'student') {
       res = await fetchStudentCourses(userStore.userId,academicYear, semester)
-    } else if (userStore.userRole === 'teacher') {
+    } else if (userStore.userRole == 'teacher') {
       res = await fetchTeacherCourses(userStore.userId,academicYear, semester)
     }
 
@@ -64,9 +84,9 @@ onMounted(fetchMyCourses)
 /**
  * 查看课程详情
  */
-function viewDetail(row) {
-  ElMessage.info(`查看课程：${row.name}`)
-}
+// function viewDetail(row) {
+//   ElMessage.info(`查看课程：${row.name}`)
+// }
 </script>
 
 <style scoped>

@@ -110,6 +110,7 @@ const account = reactive({
           
           // 更新 store 中的用户信息
           userStore.setUserInfo(res.data)
+          console.log(userStore.userRole)
           
           
           if (res.data.role === 'admin') {
