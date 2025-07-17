@@ -21,8 +21,7 @@ instance.interceptors.request.use(
         config.headers['Content-Type'] = 'application/json;charset=utf-8'
         const token = getToken()
         if (token) {
-            config.headers['token'] = token // 设置请求头
-            console.log('请求即将发送，token=', token, config.url)
+            config.headers['token'] = token // 设置请求头 
         }
         return config
     },

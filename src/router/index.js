@@ -72,6 +72,11 @@ const routes = [
         component: () => import('@/views/evaluation/StudentEvaluation.vue')
       },
       {
+        path: '/evaluation/student/detail/:assignmentId',
+        name: 'StudentEvaluationDetail',
+        component: () => import('@/views/evaluation/StudentEvaluationDetail.vue')
+      },
+      {
         path: '/evaluation/peer',
         name: 'PeerEvaluation',
         component: () => import('@/views/evaluation/PeerEvaluation.vue')

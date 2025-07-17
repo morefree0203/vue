@@ -25,18 +25,26 @@
           :formatter="formatStatus"
         />
         <!-- 在 <template #default="scope"> 里，scope.row 就是当前这一行的数据对象（即 taskList 里的某一项）。 -->
-        <el-table-column label="操作" min-width="120">
-          <template #default="scope">
-            <el-button
-              type="primary"
-              size="small"
-              :disabled="scope.row.status === 1"
-              @click="goToEvaluation(scope.row)"
-            >
-              {{ scope.row.status === 1 ? '已评价' : '去评价' }}
-            </el-button>
-          </template>
-        </el-table-column>
+          <el-table-column label="操作" min-width="120">
+        <template #default="scope">
+          <el-button
+            v-if="scope.row.status === 0"
+            type="primary"
+            size="small"
+            @click="goToEvaluation(scope.row)"
+          >
+            去评价
+          </el-button>
+          <el-button
+            v-else
+            type="info"
+            size="small"
+            @click="viewEvaluationDetail(scope.row)"
+          >
+            查看详情
+          </el-button>
+        </template>
+      </el-table-column>
       </el-table>
     </el-card>
   </div>
@@ -57,10 +65,12 @@ const taskList = ref([])
 const academicYear = getCurrentAcademicYear()
 const semester = getCurrentSemester()
 
+
+// 这里调用后端API获取任务列表
 const fetchTasks = async () => {
   loading.value = true
   try {
-    // 这里调用后端API获取任务列表
+    
     const res = await fetchStudentEvaluationTasks(userStore.userId, academicYear, semester)
     taskList.value = res.data
   } catch (e) {
@@ -73,10 +83,20 @@ const formatStatus = (row, column, cellValue) => {
   return cellValue === 1 ? '已完成' : '未完成'
 }
 
+// 跳转到具体评价页面，带上 assignmentId
 const goToEvaluation = (row) => {
-  // 跳转到具体评价页面，带上 assignmentId
   router.push({ path: `/evaluation/student/${row.assignmentId}` })
 }
+
+
+const viewEvaluationDetail = (row) => {
+  // 跳转到评价详情页面
+  router.push({ path: `/evaluation/student/detail/${row.assignmentId}` })
+}
+
+
+
+
 
 onMounted(() => {
   fetchTasks()

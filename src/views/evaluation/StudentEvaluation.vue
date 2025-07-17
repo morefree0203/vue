@@ -71,7 +71,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRoute, useRouter } from 'vue-router'
-import { getEvaluationAssignmentDetail } from '@/api/student'
+import { getStudentEvaluationAssignmentDetail } from '@/api/student'
 import { submitStudentEvaluation } from '@/api/student'
 
 // useRoute() 得到的是当前路由对象（route），没有 push 方法。
@@ -111,7 +111,7 @@ const fetchAssignmentDetail = async () => {
     ElMessage.error('未获取到评价任务ID')
     return
   }
-  const res = await getEvaluationAssignmentDetail(assignmentId)
+  const res = await getStudentEvaluationAssignmentDetail(assignmentId)
   courseInfo.value = res.data.courseInfo || {}
   indicatorList.value = res.data.indicatorList || []
   // 初始化分数
@@ -145,7 +145,6 @@ const submitEvaluation = async () => {
     ElMessage.success('评价提交成功！')
     router.push('/evaluation/student-tasks')
   } catch (e) {
-    console.error('catch error:', e)
     ElMessage.error('提交失败，请重试')
   }
   submitting.value = false
