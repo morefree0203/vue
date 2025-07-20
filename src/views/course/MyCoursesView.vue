@@ -9,10 +9,11 @@
       size="large"
       highlight-current-row
     >
+    <!--  type=""index 这表示该列是序号列，会自动显示1、2、3、4……，不需要你在数据里加序号字段。 -->
       <el-table-column
         type="index"
         label="序号"
-        width="60"
+        width="100"
         align="center"
       />
       <el-table-column prop="courseName" label="课程名称" min-width="120" align="center"/>
@@ -50,8 +51,6 @@ const academicYear = getCurrentAcademicYear()
 const semester = getCurrentSemester()
 
 function viewCourseEvaluation(row) {
-  console.log(row.courseId)
-  console.log(row)
   router.push({ path: `/course/evaluation/${row.courseId}` })
 }
 
@@ -69,11 +68,12 @@ function viewCourseEvaluation(row) {
     } else if (userStore.userRole == 'teacher') {
       res = await fetchTeacherCourses(userStore.userId,academicYear, semester)
     }
+    console.log(res.data)
 
     if(res.code=='200')
       myCourses.value = res.data
     else
-    ElMessage.error(res.msg || '获取课程失败')
+    ElMessage.error('获取课程失败')
   } catch (error) {
     ElMessage.error('获取我的课程失败')
   }
@@ -81,12 +81,7 @@ function viewCourseEvaluation(row) {
 
 onMounted(fetchMyCourses)
 
-/**
- * 查看课程详情
- */
-// function viewDetail(row) {
-//   ElMessage.info(`查看课程：${row.name}`)
-// }
+
 </script>
 
 <style scoped>

@@ -1,10 +1,9 @@
 import axios from 'axios'
-import { useToken } from '@/stores/token.js'
 import { ElMessage } from 'element-plus'
 
+// 创建axios实例
 const instance = axios.create({
   baseURL: 'http://localhost:8080/',
-  // baseURL: '/api',
   timeout: 50000000,
 })
 
@@ -17,6 +16,7 @@ const getToken = () => {
 // 可以自请求发送前对请求做一些处理
 // 比如统一加token，对请求参数统一加密
 instance.interceptors.request.use(
+  // axios 会自动把“正常情况”传给第一个参数，把“异常情况”传给第二个参数。 至于config和error的名字并不是规定的
     (config) => {
         config.headers['Content-Type'] = 'application/json;charset=utf-8'
         const token = getToken()

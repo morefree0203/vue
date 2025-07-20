@@ -24,7 +24,7 @@
         </el-table>
   
         <!-- 匿名文本评价 -->
-        <el-divider content-position="left">学生匿名评价</el-divider>
+        <el-divider content-position="left">学生匿名评价</el-divider> 
         <el-table :data="commentList" border>
           <el-table-column
             prop="openComment"
@@ -69,55 +69,15 @@
   import { getCourseEvaluationDetail, submitTeacherReply } from '@/api/teacher'
   
   const route = useRoute()
-  const courseId = route.params.courseId
+  const assignmentId = route.params.assignmentId
   
   const courseInfo = ref({})
   const indicatorStats = ref([]) // [{ indicatorName, avgScore, maxScore }]
   const commentList = ref([])    // [{ openComment, teacherReply, replyInput, commentId }]
   
-//   const fetchDetail = async () => {
-//   // 模拟测试数据
-//   const res = {
-//     data: {
-//       courseInfo: {
-//         courseName: "人工智能",
-//         academicYear: "2024-2025",
-//         semester: "2",
-//         // teacherName: "高红雷"
-//       },
-//       indicatorStats: [
-//         { indicatorName: "教学态度", avgScore: 9.2, maxScore: 10 },
-//         { indicatorName: "教学方法", avgScore: 8.8, maxScore: 10 },
-//         { indicatorName: "教学效果", avgScore: 9.0, maxScore: 10 }
-//       ],
-//       commentList: [
-//         {
-//           commentId: 1,
-//           openComment: "老师讲得很细致，收获很大！",
-//           teacherReply: "谢谢你的认可，继续加油！"
-//         },
-//         {
-//           commentId: 2,
-//           openComment: "希望作业能再少一点。",
-//           teacherReply: ""
-//         },
-//         {
-//           commentId: 3,
-//           openComment: "讲课很有激情，内容丰富。",
-//           teacherReply: ""
-//         }
-//       ]
-//     }
-//   }
-//   courseInfo.value = res.data.courseInfo || {}
-//   indicatorStats.value = res.data.indicatorStats || []
-//   commentList.value = (res.data.commentList || []).map(item => ({
-//     ...item,
-//     replyInput: ''
-//   }))
-// }
+
   const fetchDetail = async () => {
-    const res = await getCourseEvaluationDetail(courseId)
+    const res = await getCourseEvaluationDetail(assignmentId)
     
     courseInfo.value = res.data.courseInfo || {}
     indicatorStats.value = res.data.avgScores || []

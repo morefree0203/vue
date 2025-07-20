@@ -40,7 +40,7 @@
   </template>
   
   <script setup>
-  import {ElMessage} from 'element-plus'
+import {ElMessage} from 'element-plus'
 import request from "@/utils/request.js";
 import { reactive, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
@@ -86,6 +86,8 @@ const account = reactive({
     // 清除之前的错误信息
     errorMessage.value = ''
     request.post('/api/login', account).then(async (res) => {
+      // axios/request 等库请求时，这些库会自动把响应体里的 JSON 字符串解析成 JS 对象，你拿到的 res.data 已经是一个普通的 JS 对象了。
+
         if (res.code === '200') {
           // 根据是否勾选记住账号密码来决定存储方式
           if (remember.value) {

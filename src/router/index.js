@@ -38,7 +38,7 @@ const routes = [
       },
       // 老师查看自己的课程评价详情的接口
       {
-        path: '/course/evaluation/:courseId',
+        path: '/course/evaluation/:assignmentId',
         name: 'CourseEvaluationDetail',
         component: () => import('@/views/course/CourseEvaluationDetail.vue')
       },

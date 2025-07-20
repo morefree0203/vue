@@ -84,6 +84,7 @@
   const openComment = ref('')
   const teacherReply = ref('')
   
+
   const fetchDetail = async () => {
     const res = await getStudentEvaluationDetail(assignmentId)
     courseInfo.value = res.data.courseInfo || {}
