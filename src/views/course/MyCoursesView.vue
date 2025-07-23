@@ -23,12 +23,14 @@
       <el-table-column prop="semester" label="学期" width="80" align="center" />
       <el-table-column prop="courseType" label="课程类型" width="100" align="center" />
       <el-table-column label="操作" width="120" align="center" v-if="userStore.userRole === 'teacher'">
-      <template #default="scope">
-        <el-button
-          type="primary"
-          size="small"
-          @click="viewCourseEvaluation(scope.row)">
-          查看评价</el-button>
+      <template #default="scope" >
+        <el-button 
+        style="width: 100%"
+        :disabled="!scope.row || !scope.row.assignmentId"
+        @click="scope.row && viewCourseEvaluation(scope.row)"
+      >
+        {{ scope.row && scope.row.assignmentId ? '查看评价' : '未开启评价' }}
+      </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -51,7 +53,9 @@ const academicYear = getCurrentAcademicYear()
 const semester = getCurrentSemester()
 
 function viewCourseEvaluation(row) {
-  router.push({ path: `/course/evaluation/${row.courseId}` })
+  // 教师查看评价时，传递assignmentId而不是courseId
+    router.push({ path: `/course/evaluation/${row.assignmentId}` })
+
 }
 
 
@@ -64,16 +68,19 @@ function viewCourseEvaluation(row) {
   try {
     let res 
     if (userStore.userRole == 'student') {
+      console.log(userStore.userId,academicYear, semester)
+      console.log(1)
       res = await fetchStudentCourses(userStore.userId,academicYear, semester)
+      
     } else if (userStore.userRole == 'teacher') {
+      console.log(userStore.userId,academicYear, semester)
       res = await fetchTeacherCourses(userStore.userId,academicYear, semester)
     }
-    console.log(res.data)
-
     if(res.code=='200')
       myCourses.value = res.data
     else
     ElMessage.error('获取课程失败')
+
   } catch (error) {
     ElMessage.error('获取我的课程失败')
   }
@@ -89,4 +96,5 @@ onMounted(fetchMyCourses)
   padding: 24px;
   background: #fff;
 }
+/* 全局样式或组件内使用 :deep() */
 </style> 

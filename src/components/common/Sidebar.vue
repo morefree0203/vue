@@ -59,7 +59,10 @@ import {
   View,
   Edit,
   List,
-  OfficeBuilding
+  OfficeBuilding,
+  Comment,
+  ChatLineSquare,
+  DocumentChecked
 } from '@element-plus/icons-vue'
 
 const route = useRoute()
@@ -140,11 +143,18 @@ const menus = [
         roles: ['student']
       },
       {
-        path: '/evaluation/peer',
-        title: '同行评价',
+        path: '/evaluation/peer-evaluation',
+        title: '同行互评',
         icon: ChatDotRound,
         roles: ['teacher']
       },
+      {
+        path: '/evaluation/received-peer-evaluation',
+        title: '收到的评价',
+        icon: ChatDotRound,
+        roles: ['teacher']
+      },
+
       {
         path: '/evaluation/supervisor',
         title: '督导评价',
@@ -219,7 +229,8 @@ const menus = [
     path: '/statistics',
     title: '统计分析',
     icon: DataAnalysis,
-    roles: ['teacher', 'school_admin', 'college_admin', 'department_admin'],
+    // roles: ['teacher', 'school_admin', 'college_admin', 'department_admin'],
+    roles: [ 'school_admin', 'college_admin', 'department_admin'],
     children: [
       {
         path: '/statistics/evaluation',

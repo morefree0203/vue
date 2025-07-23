@@ -77,8 +77,9 @@
   
 
   const fetchDetail = async () => {
+    console.log(assignmentId)
     const res = await getCourseEvaluationDetail(assignmentId)
-    
+    console.log(res)
     courseInfo.value = res.data.courseInfo || {}
     indicatorStats.value = res.data.avgScores || []
     // 给每条评论加一个 replyInput 字段用于输入回复

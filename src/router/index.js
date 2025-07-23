@@ -73,20 +73,27 @@ const routes = [
         name: 'StudentEvaluationTasks',
         component: () => import('@/views/evaluation/StudentEvaluationTasks.vue')
       },
+      // 学生还没评价取评价页面评价
       {
         path: '/evaluation/student/:assignmentId',
         name: 'StudentEvaluation',  
         component: () => import('@/views/evaluation/StudentEvaluation.vue')
       },
+      // 学生已经评价完毕 查看评价详情
       {
         path: '/evaluation/student/detail/:assignmentId',
         name: 'StudentEvaluationDetail',
         component: () => import('@/views/evaluation/StudentEvaluationDetail.vue')
       },
       {
-        path: '/evaluation/peer',
+        path: '/evaluation/peer-evaluation',
         name: 'PeerEvaluation',
         component: () => import('@/views/evaluation/PeerEvaluation.vue')
+      },
+      {
+        path: '/evaluation/received-peer-evaluation',
+        name: 'ReceivedPeerEvaluation',
+        component: () => import('@/views/evaluation/ReceivedPeerEvaluation.vue')
       },
       {
         path: '/evaluation/supervisor',
