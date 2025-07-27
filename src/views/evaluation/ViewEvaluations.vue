@@ -29,7 +29,7 @@
         </el-form>
   
         <!-- 评价列表 -->
-        <el-table :data="evaluationList" border stripe>
+        <el-table :data="evaluationList" border stripe v-loading="loading">
           <el-table-column type="index" label="序号" width="60" />
           <el-table-column prop="courseName" label="课程名称" min-width="120" />
           <el-table-column prop="teacherName" label="授课教师" width="100" />

@@ -1,10 +1,12 @@
 
 import request from '@/utils/request'
 
+// 获取督导和领导可评价课程(也就是全校的课程)
 export function getSupervisorLeaderCourses(teacherId) {
   return request.get('/supervisor-leader/courses', { params: { teacherId} })
 }
 
+// 获取督导和领导评价指标
 export function getSupervisorLeaderIndicators() {
   return request.get('/supervisor-leader/indicators')
 }
@@ -23,31 +25,5 @@ export function getEvaluationDetail(courseId) {
   return request.get('/supervisor-leader/evaluation-detail', { params: { courseId } })
 }
 
-// 获取督导可评价课程
-export function getSupervisorCourses() {
-  return request.get('/supervisor-leader/supervisor-courses')
-}
 
-// 获取领导可评价课程
-export function getLeaderCourses() {
-  return request.get('/supervisor-leader/leader-courses')
-}
-// 获取督导评价指标
-export function getSupervisorIndicators() {
-  return request.get('/supervisor-leader/supervisor-indicators')
-}
 
-// 获取领导评价指标
-export function getLeaderIndicators() {
-  return request.get('/supervisor-leader/leader-indicators')
-}
-
-// 提交督导评价
-export function submitSupervisorEvaluation(data) {
-  return request.post('/supervisor-leader/submit-supervisor-evaluation', data)
-}
-
-// 提交领导评价
-export function submitLeaderEvaluation(data) {
-  return request.post('/supervisor-leader/submit-leader-evaluation', data)
-}

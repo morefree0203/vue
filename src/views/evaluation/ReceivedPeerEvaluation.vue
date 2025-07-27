@@ -33,7 +33,7 @@
     <div class="eval-header">
     <span>
       <b>评价人：</b>
-      <span>{{ Number(evalItem.isAnonymous) === 1 ? '匿名教师' : evalItem.evaluatorName }}</span>
+      <span>{{ evalItem.evaluatorName }}</span>
     </span>
     <span class="eval-time">{{ evalItem.createTime }}</span>
   </div>
