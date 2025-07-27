@@ -90,7 +90,7 @@ const menus = [
     path: '/course',
     title: '课程管理',
     icon: Document,
-    roles: ['student', 'teacher', 'supervisor', 'leader', 'enterprise', 'school_admin', 'college_admin', 'department_admin'],
+    roles: ['student', 'teacher', 'enterprise', 'school_admin', 'college_admin', 'department_admin'],
     children: [
       // {
       //   path: '/course/list',
@@ -128,8 +128,6 @@ const menus = [
     ]
   },
 
-
-
   {
     path: '/evaluation',
     title: '教学评价',
@@ -156,13 +154,13 @@ const menus = [
       },
 
       {
-        path: '/evaluation/supervisor',
+        path: '/evaluation/Supervisor-leader',
         title: '督导评价',
         icon: View,
         roles: ['supervisor']
       },
       {
-        path: '/evaluation/leader',
+        path: '/evaluation/Supervisor-leader',
         title: '领导评价',
         icon: View,
         roles: ['leader']
@@ -190,6 +188,22 @@ const menus = [
         title: '评价任务管理',
         icon: Document,
         roles: ['school_admin', 'college_admin', 'department_admin']
+      },
+      // 在 menus 数组中添加
+      {
+        path: '/evaluation/view-evaluations',
+        title: '查看评价',
+        icon: View,
+        roles: ['supervisor', 'leader'],
+        // 特殊权限检查：只有有查看权限的督导/领导才能看到
+        showCondition: () => {
+          const userRole = userStore.userInfo?.role
+          if (userRole === 'supervisor' || userRole === 'leader') {
+            const viewScopeType = userStore.userInfo?.viewScopeType
+            return viewScopeType && viewScopeType !== 'NONE'
+          }
+          return false
+        }
       }
     ]
   },
@@ -290,25 +304,43 @@ const menus = [
 
 // 过滤菜单（根据用户角色）
 const filteredMenus = computed(() => {
-  return menus.filter(menu => hasPermission(menu.roles))
+  return menus.filter(menu => {
+    // 基础权限检查
+    if (!hasPermission(menu.roles)) {
+      return false
+    }
+    
+    // 特殊条件检查
+    if (menu.showCondition && typeof menu.showCondition === 'function') {
+      return menu.showCondition()
+    }
+    
+    return true
+  })
 })
 
 
 
 // 检查权限
 const hasPermission = (roles) => {
-  
   const userRole = userStore.userInfo?.role
   
   if (!userRole) {
     return false
   }
   
+  // 基础角色检查
   if (Array.isArray(roles)) {
-    return roles.includes(userRole)
+    if (!roles.includes(userRole)) {
+      return false
+    }
   } else {
-    return roles === userRole
+    if (roles !== userRole) {
+      return false
   }
+  }
+  
+  return true
 }
 
 

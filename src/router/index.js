@@ -96,14 +96,19 @@ const routes = [
         component: () => import('@/views/evaluation/ReceivedPeerEvaluation.vue')
       },
       {
-        path: '/evaluation/supervisor',
-        name: 'SupervisorEvaluation',
-        component: () => import('@/views/evaluation/SupervisorEvaluation.vue')
+        path: '/evaluation/Supervisor-leader',
+        name: 'Supervisor-leaderEvaluation',
+        component: () => import('@/views/evaluation/Supervisor-LeaderEvaluation.vue')
       },
       {
-        path: '/evaluation/leader',
-        name: 'LeaderEvaluation',
-        component: () => import('@/views/evaluation/LeaderEvaluation.vue')
+        path: '/evaluation/Supervisor-leader',
+        name: 'Supervisor-leaderEvaluation',
+        component: () => import('@/views/evaluation/Supervisor-LeaderEvaluation.vue')
+      },
+      {
+        path: '/evaluation/view-evaluations',
+        name: 'ViewEvaluations',
+        component: () => import('@/views/evaluation/ViewEvaluations.vue')
       },
       {
         path: '/evaluation/enterprise',
