@@ -1,23 +1,57 @@
-// 系统管理相关接口
-// 包含用户管理、角色权限管理、权限分配、系统设置等
 import request from '@/utils/request'
 
-// 用户管理相关接口
-export function getUserList(params) {
-  // return request.get('/api/admin/user', { params })
+// 获取管理员列表
+export function getAdminList(params) {
+  // 确保分页参数正确
+  const requestParams = {
+    ...params,
+    page: params.page || 0,
+    size: params.size || 20
+  }
+  return request.get('/admin/list', { params: requestParams })
 }
 
-// 角色权限管理相关接口
-export function getRoleList(params) {
-  // return request.get('/api/admin/role', { params })
+// 获取管理员详情
+export function getAdminDetail(adminId) {
+  return request.get(`/admin/detail/${adminId}`)
 }
 
-// 权限分配相关接口
-export function getPermissionList(params) {
-  // return request.get('/api/admin/permission', { params })
+// 获取可分配管理员权限的用户列表
+export function getUsersByRole(params) {
+  return request.get('/admin/users', { params })
 }
 
-// 系统设置相关接口
-export function getSystemSettings(params) {
-  // return request.get('/api/admin/system', { params })
+// 分配管理员权限
+export function assignAdminRole(data) {
+  return request.post('/admin/assign', data)
+}
+
+// 更新管理员信息
+export function updateAdmin(data) {
+  return request.put('/admin/update', data)
+}
+
+// 撤销管理员权限
+export function revokeAdminRole(adminId) {
+  return request.delete(`/admin/revoke/${adminId}`)
+}
+
+// 更新管理员状态
+export function updateAdminStatus(adminId, status) {
+  return request.put(`/admin/status/${adminId}`, null, { params: { status } })
+}
+
+// 根据级别获取管理员列表
+export function getAdminsByLevel(adminLevel) {
+  return request.get(`/admin/level/${adminLevel}`)
+}
+
+// 获取学院列表
+export function getCollegeList() {
+  return request.get('/admin/colleges')
+}
+
+// 根据学院ID获取系列表
+export function getDepartmentList(collegeId) {
+  return request.get(`/admin/departments/${collegeId}`)
 } 

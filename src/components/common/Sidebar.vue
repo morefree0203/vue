@@ -90,7 +90,7 @@ const menus = [
     path: '/course',
     title: '课程管理',
     icon: Document,
-    roles: ['student', 'teacher', 'enterprise', 'school_admin', 'college_admin', 'department_admin'],
+    roles: ['student', 'teacher',  'school_admin', 'college_admin', 'department_admin'],
     children: [
       // {
       //   path: '/course/list',

@@ -168,15 +168,15 @@ const routes = [
         component: () => import('@/views/dashboard/StatisticsView.vue')
       },
       // 系统管理
-      {
-        path: '/admin/user',
-        name: 'UserManagement',
-        component: () => import('@/views/admin/UserManagementView.vue')
-      },
+      // {
+      //   path: '/admin/user',
+      //   name: 'UserManagement',
+      //   component: () => import('@/views/admin/ManagementView.vue')
+      // },
       {
         path: '/admin/role',
         name: 'RolePermissionManagement',
-        component: () => import('@/views/admin/RolePermissionManagement.vue')
+        component: () => import('@/views/admin/AdminManagement.vue')
       },
       {
         path: '/admin/permission',

@@ -17,11 +17,11 @@ export function getCurrentAcademicYear() {
   
   /**
    * 获取当前学期号
-   * 规则：2-7月为2，9-1月为1
+   * 规则：2-8月为2，9-1月为1
    */
 export function getCurrentSemester() {
     const month = new Date().getMonth() + 1
-    if (month >= 2 && month <= 7) {
+    if (month >= 2 && month <= 8) {
       return '2'
     } else {
       return '1'
