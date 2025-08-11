@@ -33,6 +33,18 @@ export function getEvaluationManage(params) {
 }
 
 // 评价指标管理相关接口
-export function getEvaluationIndicators(params) {
-  // return request.get('/api/evaluation/indicators', { params })
+export function getEvaluationIndicators() {
+  return request.get('/api/school-admin/evaluation-indicators')
+}
+
+export function addEvaluationIndicator(data) {
+  return request.post('/api/school-admin/evaluation-indicators', data)
+}
+
+export function updateEvaluationIndicator(id, data) {
+  return request.put(`/api/school-admin/evaluation-indicators/${id}`, data)
+}
+
+export function deleteEvaluationIndicator(id) {
+  return request.delete(`/api/school-admin/evaluation-indicators/${id}`)
 } 

@@ -139,7 +139,8 @@
         }
         const res = await getEvaluationsByScope(params)
         if (res.code === '200') {
-          evaluationList.value = res.data
+          evaluationList.value = res.data.records
+          pagination.total = res.data.total
         } else {
           ElMessage.error(res.message || '获取评价数据失败')
         }

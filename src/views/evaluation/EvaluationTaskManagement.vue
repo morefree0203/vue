@@ -8,71 +8,66 @@
         </div>
       </template>
 
-      <!-- 筛选条件 -->
-      <div class="filter-section">
-        <el-row :gutter="20">
-          <el-col :span="6">
-            <el-select v-model="filter.evaluationType" placeholder="评价类型" clearable>
-              <el-option label="学生评价" value="STUDENT" />
-              <el-option label="同行评价" value="PEER" />
-              <el-option label="督导评价" value="SUPERVISOR" />
-              <el-option label="领导评价" value="LEADER" />
-              <el-option label="企业评价" value="ENTERPRISE" />
-            </el-select>
-          </el-col>
-          <el-col :span="6">
-            <el-select v-model="filter.semester" placeholder="学期" clearable>
-              <el-option label="第一学期" value="1" />
-              <el-option label="第二学期" value="2" />
-            </el-select>
-          </el-col>
-          <el-col :span="6">
-            <el-select v-model="filter.status" placeholder="状态" clearable>
-              <el-option label="进行中" value="1" />
-              <el-option label="已结束" value="0" />
-              <el-option label="已暂停" value="2" />
-            </el-select>
-          </el-col>
-          <el-col :span="6">
-            <el-button type="primary" @click="fetchTasks">查询</el-button>
-            <el-button @click="resetFilter">重置</el-button>
-          </el-col>
-        </el-row>
-      </div>
+             <!-- 筛选条件 -->
+       <div class="filter-section">
+         <el-row :gutter="20">
+           <el-col :span="8">
+             <el-select v-model="filter.semester" placeholder="学期" clearable>
+               <el-option label="第一学期" value="1" />
+               <el-option label="第二学期" value="2" />
+             </el-select>
+           </el-col>
+                       <el-col :span="8">
+              <el-select v-model="filter.status" placeholder="状态" clearable>
+                <el-option label="进行中" value="1" />
+                <el-option label="已结束" value="0" />
+              </el-select>
+            </el-col>
+           <el-col :span="8">
+             <el-button type="primary" @click="fetchTasks">查询</el-button>
+             <el-button @click="resetFilter">重置</el-button>
+           </el-col>
+         </el-row>
+       </div>
 
-      <!-- 任务列表 -->
-      <el-table :data="taskList" v-loading="loading" style="margin-top: 20px;">
-        <el-table-column prop="taskName" label="任务名称" />
-        <el-table-column prop="courseName" label="课程名称" />
-        <el-table-column prop="evaluationType" label="评价类型">
-          <template #default="scope">
-            <el-tag :type="getEvaluationTypeTag(scope.row.evaluationType)">
-              {{ getEvaluationTypeName(scope.row.evaluationType) }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="semester" label="学期" />
-        <el-table-column prop="academicYear" label="学年" />
-        <el-table-column prop="startTime" label="开始时间" />
-        <el-table-column prop="endTime" label="结束时间" />
-        <el-table-column prop="status" label="状态">
-          <template #default="scope">
-            <el-tag :type="getStatusTag(scope.row.status)">
-              {{ getStatusName(scope.row.status) }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="200">
-          <template #default="scope">
-            <el-button size="small" @click="viewAssignments(scope.row)">查看分配</el-button>
-            <el-button size="small" type="warning" @click="pauseTask(scope.row)" 
-                       v-if="scope.row.status === 1">暂停</el-button>
-            <el-button size="small" type="success" @click="resumeTask(scope.row)" 
-                       v-if="scope.row.status === 2">恢复</el-button>
-            <el-button size="small" type="danger" @click="deleteTask(scope.row)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+             <!-- 任务列表 -->
+       <el-table :data="taskList" v-loading="loading" style="margin-top: 20px;">
+         <el-table-column prop="taskName" label="任务名称" />
+         <el-table-column prop="courseName" label="课程名称" />
+         <el-table-column prop="semester" label="学期" />
+         <el-table-column prop="academicYear" label="学年" />
+         <el-table-column prop="startTime" label="开始时间" />
+         <el-table-column prop="endTime" label="结束时间" />
+         <el-table-column prop="status" label="状态">
+           <template #default="scope">
+             <el-tag :type="getStatusTag(scope.row.status)">
+               {{ getStatusName(scope.row.status) }}
+             </el-tag>
+           </template>
+         </el-table-column>
+                         <el-table-column label="操作" width="280">
+             <template #default="scope">
+               <div style="display: flex; gap: 8px;">
+                 <el-button size="small" @click="viewAssignments(scope.row)">查看分配</el-button>
+                 <el-button size="small" type="primary" @click="showAssignDialog(scope.row)">分配</el-button>
+                 <el-button size="small" type="danger" @click="deleteTask(scope.row)">删除</el-button>
+               </div>
+             </template>
+           </el-table-column>
+       </el-table>
+
+       <!-- 分页组件 -->
+       <div class="pagination-container" style="margin-top: 20px; text-align: right;">
+         <el-pagination
+           v-model:current-page="pagination.current"
+           v-model:page-size="pagination.size"
+           :page-sizes="[10, 20, 50, 100]"
+           :total="pagination.total"
+           layout="total, sizes, prev, pager, next, jumper"
+           @size-change="handleSizeChange"
+           @current-change="handleCurrentChange"
+         />
+       </div>
     </el-card>
 
     <!-- 创建任务对话框 -->
@@ -81,25 +76,16 @@
         <el-form-item label="任务名称" prop="taskName">
           <el-input v-model="taskForm.taskName" placeholder="请输入任务名称" />
         </el-form-item>
-        <el-form-item label="课程" prop="courseId">
-          <el-select v-model="taskForm.courseId" placeholder="选择课程" style="width: 100%">
-            <el-option 
-              v-for="course in courseList" 
-              :key="course.id" 
-              :label="course.courseName" 
-              :value="course.id" 
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="评价类型" prop="evaluationType">
-          <el-select v-model="taskForm.evaluationType" placeholder="选择评价类型" style="width: 100%">
-            <el-option label="学生评价" value="STUDENT" />
-            <el-option label="同行评价" value="PEER" />
-            <el-option label="督导评价" value="SUPERVISOR" />
-            <el-option label="领导评价" value="LEADER" />
-            <el-option label="企业评价" value="ENTERPRISE" />
-          </el-select>
-        </el-form-item>
+                 <el-form-item label="课程" prop="courseId">
+           <el-select v-model="taskForm.courseId" placeholder="选择课程" style="width: 100%">
+             <el-option 
+               v-for="course in courseList" 
+               :key="course.id" 
+               :label="course.courseName" 
+               :value="course.id" 
+             />
+           </el-select>
+         </el-form-item>
         <el-form-item label="学期" prop="semester">
           <el-select v-model="taskForm.semester" placeholder="选择学期" style="width: 100%">
             <el-option label="第一学期" value="1" />
@@ -119,15 +105,8 @@
             style="width: 100%"
           />
         </el-form-item>
-        <el-form-item label="目标范围" prop="targetScope">
-          <el-radio-group v-model="taskForm.targetScope">
-            <el-radio label="SCHOOL">全校</el-radio>
-            <el-radio label="COLLEGE">指定学院</el-radio>
-            <el-radio label="DEPARTMENT">指定系</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="目标学院" v-if="taskForm.targetScope === 'COLLEGE' || taskForm.targetScope === 'DEPARTMENT'">
-          <el-select v-model="taskForm.targetCollegeId" placeholder="选择学院" style="width: 100%">
+        <el-form-item label="目标学院" prop="targetCollegeId">
+          <el-select v-model="taskForm.targetCollegeId" placeholder="选择学院（可选）" style="width: 100%" clearable @change="handleCollegeChange">
             <el-option 
               v-for="college in collegeList" 
               :key="college.id" 
@@ -136,8 +115,8 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="目标系" v-if="taskForm.targetScope === 'DEPARTMENT'">
-          <el-select v-model="taskForm.targetDepartmentId" placeholder="选择系" style="width: 100%">
+        <el-form-item label="目标系" prop="targetDepartmentId">
+          <el-select v-model="taskForm.targetDepartmentId" placeholder="选择系（可选）" style="width: 100%" clearable>
             <el-option 
               v-for="dept in departmentList" 
               :key="dept.id" 
@@ -153,25 +132,92 @@
       </template>
     </el-dialog>
 
-    <!-- 任务分配对话框 -->
-    <el-dialog title="任务分配详情" v-model="assignmentDialogVisible" width="800px">
-      <el-table :data="assignmentList" v-loading="assignmentLoading">
-        <el-table-column prop="evaluatorName" label="评价者" />
-        <el-table-column prop="evaluatorType" label="评价者类型">
-          <template #default="scope">
-            {{ getEvaluatorTypeName(scope.row.evaluatorType) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="status" label="状态">
-          <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : scope.row.status === 2 ? 'danger' : 'info'">
-              {{ scope.row.status === 1 ? '已完成' : scope.row.status === 2 ? '已过期' : '未完成' }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="submitTime" label="提交时间" />
-      </el-table>
-    </el-dialog>
+      <!-- 任务分配对话框 -->
+      <el-dialog title="学生任务分配详情" v-model="assignmentDialogVisible" width="1000px">
+        <el-table :data="assignmentList" v-loading="assignmentLoading">
+          <el-table-column prop="studentName" label="学生姓名" />
+          <el-table-column prop="studentId" label="学号" />
+          <el-table-column prop="className" label="班级" />
+          <el-table-column prop="departmentName" label="系" />
+          <el-table-column prop="collegeName" label="学院" />
+          <el-table-column prop="status" label="状态">
+            <template #default="scope">
+              <el-tag :type="scope.row.status === 1 ? 'success' : scope.row.status === 2 ? 'danger' : 'info'">
+                {{ scope.row.status === 1 ? '已完成' : scope.row.status === 2 ? '已过期' : '未完成' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="createTime" label="分配时间" />
+        </el-table>
+      </el-dialog>
+
+      <!-- 分配任务对话框 -->
+      <el-dialog title="分配评价任务" v-model="assignDialogVisible" width="800px">
+        <div class="assign-dialog-content">
+          <div class="task-info">
+            <h4>任务信息</h4>
+            <p><strong>任务名称：</strong>{{ currentTask?.taskName }}</p>
+            <p><strong>课程名称：</strong>{{ currentTask?.courseName }}</p>
+            <p><strong>学期：</strong>{{ currentTask?.semester }}</p>
+            <p><strong>学年：</strong>{{ currentTask?.academicYear }}</p>
+          </div>
+          
+          <div class="filter-section" style="margin: 20px 0;">
+            <el-row :gutter="20">
+              <el-col :span="8">
+                <el-select v-model="studentFilter.collegeId" placeholder="选择学院" clearable @change="handleStudentFilterCollegeChange">
+                  <el-option 
+                    v-for="college in collegeList" 
+                    :key="college.id" 
+                    :label="college.name" 
+                    :value="college.id" 
+                  />
+                </el-select>
+              </el-col>
+              <el-col :span="8">
+                <el-select v-model="studentFilter.departmentId" placeholder="选择系" clearable @change="fetchAvailableStudents">
+                  <el-option 
+                    v-for="dept in departmentList" 
+                    :key="dept.id" 
+                    :label="dept.name" 
+                    :value="dept.id" 
+                  />
+                </el-select>
+              </el-col>
+              <el-col :span="8">
+                <el-input v-model="studentFilter.keyword" placeholder="搜索学生姓名或学号" @input="fetchAvailableStudents" />
+              </el-col>
+            </el-row>
+          </div>
+
+          <div class="student-selection">
+            <div class="selection-header">
+              <span>可分配学生 ({{ availableStudents.length }}人)</span>
+            </div>
+            
+            <el-table 
+              :data="availableStudents" 
+              v-loading="studentsLoading"
+              @selection-change="handleStudentSelectionChange"
+              style="margin-top: 10px;"
+            >
+              <el-table-column type="selection" width="55" />
+              <el-table-column prop="studentName" label="学生姓名" />
+              <el-table-column prop="studentId" label="学号" />
+              <el-table-column prop="className" label="班级" />
+              <el-table-column prop="departmentName" label="系" />
+              <el-table-column prop="collegeName" label="学院" />
+            </el-table>
+          </div>
+        </div>
+        
+        <template #footer>
+          <el-button @click="assignDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="assignTaskToStudentsHandler" :loading="assigning" :disabled="selectedStudents.length === 0">
+            分配任务 ({{ selectedStudents.length }}人)
+          </el-button>
+        </template>
+      </el-dialog>
   </div>
 </template>
 
@@ -179,91 +225,112 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '@/stores/user'
+import { getEvaluationTasks, createEvaluationTask, updateTaskStatus, deleteEvaluationTask, getTaskAssignments, getCourseList, getCollegeList, getDepartmentList, getAvailableStudents, assignTaskToStudents } from '@/api/evaluationTask'
 
 const userStore = useUserStore()
 const loading = ref(false)
 const creating = ref(false)
 const assignmentLoading = ref(false)
+const studentsLoading = ref(false)
+const assigning = ref(false)
 const createDialogVisible = ref(false)
 const assignmentDialogVisible = ref(false)
+const assignDialogVisible = ref(false)
 const taskFormRef = ref()
 
-// 数据列表
-const taskList = ref([])
-const courseList = ref([])
-const collegeList = ref([])
-const departmentList = ref([])
-const assignmentList = ref([])
+   // 数据列表
+  const taskList = ref([])
+  const courseList = ref([])
+  const collegeList = ref([])
+  const departmentList = ref([])
+  const assignmentList = ref([])
+  const availableStudents = ref([])
+  const selectedStudents = ref([])
+  const currentTask = ref(null)
 
-// 筛选条件
-const filter = reactive({
-  evaluationType: '',
-  semester: '',
-  status: ''
-})
+ // 分页信息
+ const pagination = reactive({
+   current: 1,
+   size: 10,
+   total: 0
+ })
 
-// 任务表单
-const taskForm = reactive({
-  taskName: '',
-  courseId: '',
-  evaluationType: '',
-  semester: '',
-  academicYear: '',
-  evaluationTime: [],
-  targetScope: 'SCHOOL',
-  targetCollegeId: '',
-  targetDepartmentId: ''
-})
+   // 筛选条件
+  const filter = reactive({
+    semester: '',
+    status: ''
+  })
 
-// 表单验证规则
-const taskRules = {
-  taskName: [{ required: true, message: '请输入任务名称', trigger: 'blur' }],
-  courseId: [{ required: true, message: '请选择课程', trigger: 'change' }],
-  evaluationType: [{ required: true, message: '请选择评价类型', trigger: 'change' }],
-  semester: [{ required: true, message: '请选择学期', trigger: 'change' }],
-  academicYear: [{ required: true, message: '请输入学年', trigger: 'blur' }],
-  evaluationTime: [{ required: true, message: '请选择评价时间', trigger: 'change' }],
-  targetScope: [{ required: true, message: '请选择目标范围', trigger: 'change' }]
-}
+  // 学生筛选条件
+  const studentFilter = reactive({
+    collegeId: '',
+    departmentId: '',
+    keyword: ''
+  })
 
-// 获取任务列表
-const fetchTasks = async () => {
-  loading.value = true
-  try {
-    // 这里应该调用API获取任务列表
-    // const res = await getEvaluationTasks(filter)
-    // taskList.value = res.data
-    
-    // 模拟数据
-    taskList.value = [
-      {
-        id: '1',
-        taskName: '2024年第一学期学生评价',
-        courseName: '高等数学',
-        evaluationType: 'STUDENT',
-        semester: '1',
-        academicYear: '2024-2025',
-        startTime: '2024-12-01 00:00:00',
-        endTime: '2024-12-31 23:59:59',
-        status: 1
-      }
-    ]
-  } catch (error) {
-    ElMessage.error('获取任务列表失败')
-  } finally {
-    loading.value = false
-  }
-}
+   // 任务表单
+  const taskForm = reactive({
+    taskName: '',
+    courseId: '',
+    semester: '',
+    academicYear: '',
+    evaluationTime: [],
+    targetCollegeId: '',
+    targetDepartmentId: ''
+  })
+
+ // 表单验证规则
+ const taskRules = {
+   taskName: [{ required: true, message: '请输入任务名称', trigger: 'blur' }],
+   courseId: [{ required: true, message: '请选择课程', trigger: 'change' }],
+   semester: [{ required: true, message: '请选择学期', trigger: 'change' }],
+   academicYear: [{ required: true, message: '请输入学年', trigger: 'blur' }],
+   evaluationTime: [{ required: true, message: '请选择评价时间', trigger: 'change' }]
+ }
+
+ // 获取任务列表
+ const fetchTasks = async () => {
+   loading.value = true
+   try {
+     // 构建请求参数，包含分页和筛选条件
+     const params = {
+       ...filter,
+       pageNum: Number(pagination.current),
+       pageSize: Number(pagination.size)
+     }
+     
+     const res = await getEvaluationTasks(params)
+     if (res.code === '200') {
+       // 处理分页数据
+       if (res.data && res.data.records) {
+         taskList.value = res.data.records
+         pagination.total = res.data.total || 0
+       } else {
+         taskList.value = res.data || []
+         pagination.total = 0
+       }
+     } else {
+       ElMessage.error(res.message || '获取任务列表失败')
+     }
+   } catch (error) {
+     console.error('获取任务列表失败:', error)
+     ElMessage.error('获取任务列表失败')
+   } finally {
+     loading.value = false
+   }
+ }
 
 // 获取课程列表
 const fetchCourses = async () => {
   try {
-    // 这里应该调用API获取课程列表
-    courseList.value = [
-      { id: '1', courseName: '高等数学' },
-      { id: '2', courseName: '线性代数' }
-    ]
+    const res = await getCourseList()
+    if (res.code === '200') {
+      courseList.value = res.data
+    } else {
+      ElMessage.error(res.message || '获取课程列表失败')
+    }
   } catch (error) {
+    console.error('获取课程列表失败:', error)
     ElMessage.error('获取课程列表失败')
   }
 }
@@ -271,25 +338,60 @@ const fetchCourses = async () => {
 // 获取学院列表
 const fetchColleges = async () => {
   try {
-    collegeList.value = [
-      { id: '1', name: '计算机学院' },
-      { id: '2', name: '数学学院' }
-    ]
+    const res = await getCollegeList()
+    if (res.code === '200') {
+      collegeList.value = res.data
+    } else {
+      ElMessage.error(res.message || '获取学院列表失败')
+    }
   } catch (error) {
+    console.error('获取学院列表失败:', error)
     ElMessage.error('获取学院列表失败')
   }
 }
 
 // 获取系列表
-const fetchDepartments = async () => {
+const fetchDepartments = async (collegeId) => {
   try {
-    departmentList.value = [
-      { id: '1', name: '计算机科学与技术系' },
-      { id: '2', name: '软件工程系' }
-    ]
+    const res = await getDepartmentList(collegeId)
+    if (res.code === '200') {
+      departmentList.value = res.data
+    } else {
+      ElMessage.error(res.message || '获取系列表失败')
+    }
   } catch (error) {
+    console.error('获取系列表失败:', error)
     ElMessage.error('获取系列表失败')
   }
+}
+
+// 处理发布任务表单中学院变化
+const handleCollegeChange = async (collegeId) => {
+  // 清空系的选择
+  taskForm.targetDepartmentId = ''
+  // 清空系列表
+  departmentList.value = []
+  
+  if (collegeId) {
+    // 获取该学院的系列表
+    await fetchDepartments(collegeId)
+  }
+}
+
+// 处理分配任务对话框中学院变化
+const handleStudentFilterCollegeChange = async (collegeId) => {
+  // 清空系的选择
+  studentFilter.departmentId = ''
+  // 清空系列表
+  departmentList.value = []
+  
+  if (collegeId) {
+    // 获取该学院的系列表
+    await fetchDepartments(collegeId)
+  }
+  
+  // 重新获取可分配的学生列表
+  await fetchAvailableStudents()
 }
 
 // 显示创建对话框
@@ -298,20 +400,20 @@ const showCreateDialog = () => {
   resetTaskForm()
 }
 
-// 重置任务表单
-const resetTaskForm = () => {
-  Object.assign(taskForm, {
-    taskName: '',
-    courseId: '',
-    evaluationType: '',
-    semester: '',
-    academicYear: '',
-    evaluationTime: [],
-    targetScope: 'SCHOOL',
-    targetCollegeId: '',
-    targetDepartmentId: ''
-  })
-}
+   // 重置任务表单
+  const resetTaskForm = () => {
+    Object.assign(taskForm, {
+      taskName: '',
+      courseId: '',
+      semester: '',
+      academicYear: '',
+      evaluationTime: [],
+      targetCollegeId: '',
+      targetDepartmentId: ''
+    })
+    // 清空系列表
+    departmentList.value = []
+  }
 
 // 创建任务
 const createTask = async () => {
@@ -319,13 +421,26 @@ const createTask = async () => {
     await taskFormRef.value.validate()
     creating.value = true
     
-    // 这里应该调用API创建任务
-    // await createEvaluationTask(taskForm)
+    // 处理时间范围
+    const taskData = {
+      ...taskForm,
+      startTime: taskForm.evaluationTime[0],
+      endTime: taskForm.evaluationTime[1],
+      publisherId: userStore.userId, // 添加发布者ID
+      publisherLevel: 'SCHOOL' // 校级管理员
+    }
+    delete taskData.evaluationTime
     
-    ElMessage.success('任务发布成功')
-    createDialogVisible.value = false
-    fetchTasks()
+    const res = await createEvaluationTask(taskData)
+    if (res.code === '200') {
+      ElMessage.success('任务发布成功')
+      createDialogVisible.value = false
+      fetchTasks()
+    } else {
+      ElMessage.error(res.message || '任务发布失败')
+    }
   } catch (error) {
+    console.error('任务发布失败:', error)
     ElMessage.error('任务发布失败')
   } finally {
     creating.value = false
@@ -338,57 +453,21 @@ const viewAssignments = async (task) => {
   assignmentLoading.value = true
   
   try {
-    // 这里应该调用API获取任务分配详情
-    // const res = await getTaskAssignments(task.id)
-    // assignmentList.value = res.data
-    
-    // 模拟数据
-    assignmentList.value = [
-      {
-        evaluatorName: '张三',
-        evaluatorType: 'STUDENT',
-        status: 1,
-        submitTime: '2024-12-15 10:30:00'
-      }
-    ]
+    const res = await getTaskAssignments(task.id)
+    if (res.code === '200') {
+      assignmentList.value = res.data
+    } else {
+      ElMessage.error(res.message || '获取分配详情失败')
+    }
   } catch (error) {
+    console.error('获取分配详情失败:', error)
     ElMessage.error('获取分配详情失败')
   } finally {
     assignmentLoading.value = false
   }
 }
 
-// 暂停任务
-const pauseTask = async (task) => {
-  try {
-    await ElMessageBox.confirm('确定要暂停该任务吗？', '提示', {
-      type: 'warning'
-    })
-    
-    // 这里应该调用API暂停任务
-    // await pauseEvaluationTask(task.id)
-    
-    ElMessage.success('任务已暂停')
-    fetchTasks()
-  } catch (error) {
-    if (error !== 'cancel') {
-      ElMessage.error('操作失败')
-    }
-  }
-}
 
-// 恢复任务
-const resumeTask = async (task) => {
-  try {
-    // 这里应该调用API恢复任务
-    // await resumeEvaluationTask(task.id)
-    
-    ElMessage.success('任务已恢复')
-    fetchTasks()
-  } catch (error) {
-    ElMessage.error('操作失败')
-  }
-}
 
 // 删除任务
 const deleteTask = async (task) => {
@@ -397,58 +476,132 @@ const deleteTask = async (task) => {
       type: 'warning'
     })
     
-    // 这里应该调用API删除任务
-    // await deleteEvaluationTask(task.id)
-    
-    ElMessage.success('任务已删除')
-    fetchTasks()
+    const res = await deleteEvaluationTask(task.id)
+    if (res.code === '200') {
+      ElMessage.success('任务已删除')
+      fetchTasks()
+    } else {
+      ElMessage.error(res.message || '删除失败')
+    }
   } catch (error) {
     if (error !== 'cancel') {
+      console.error('删除任务失败:', error)
       ElMessage.error('删除失败')
     }
   }
 }
 
-// 重置筛选条件
-const resetFilter = () => {
-  Object.assign(filter, {
-    evaluationType: '',
-    semester: '',
-    status: ''
+// 显示分配对话框
+const showAssignDialog = async (task) => {
+  currentTask.value = task
+  assignDialogVisible.value = true
+  selectedStudents.value = []
+  
+  // 重置筛选条件
+  Object.assign(studentFilter, {
+    collegeId: '',
+    departmentId: '',
+    keyword: ''
   })
-  fetchTasks()
+  
+  // 清空系列表
+  departmentList.value = []
+  
+  // 获取可分配的学生列表
+  await fetchAvailableStudents()
 }
 
-// 获取评价类型标签样式
-const getEvaluationTypeTag = (type) => {
-  const tagMap = {
-    'STUDENT': 'primary',
-    'PEER': 'success',
-    'SUPERVISOR': 'warning',
-    'LEADER': 'danger',
-    'ENTERPRISE': 'info'
+// 获取可分配的学生列表
+const fetchAvailableStudents = async () => {
+  if (!currentTask.value) return
+  
+  studentsLoading.value = true
+  try {
+    const params = {
+      taskId: currentTask.value.id,
+      ...studentFilter
+    }
+    
+    const res = await getAvailableStudents(params)
+    if (res.code === '200') {
+      availableStudents.value = res.data || []
+    } else {
+      ElMessage.error(res.message || '获取学生列表失败')
+    }
+  } catch (error) {
+    console.error('获取学生列表失败:', error)
+    ElMessage.error('获取学生列表失败')
+  } finally {
+    studentsLoading.value = false
   }
-  return tagMap[type] || 'info'
 }
 
-// 获取评价类型名称
-const getEvaluationTypeName = (type) => {
-  const nameMap = {
-    'STUDENT': '学生评价',
-    'PEER': '同行评价',
-    'SUPERVISOR': '督导评价',
-    'LEADER': '领导评价',
-    'ENTERPRISE': '企业评价'
-  }
-  return nameMap[type] || type
+// 处理学生选择变化
+const handleStudentSelectionChange = (selection) => {
+  selectedStudents.value = selection
 }
+
+
+
+// 分配任务给学生
+const assignTaskToStudentsHandler = async () => {
+  if (selectedStudents.value.length === 0) {
+    ElMessage.warning('请选择要分配的学生')
+    return
+  }
+  
+  assigning.value = true
+  try {
+    const studentIds = selectedStudents.value.map(student => student.studentId)
+    const res = await assignTaskToStudents(currentTask.value.id, studentIds)
+    
+    if (res.code === '200') {
+      ElMessage.success(`成功分配任务给 ${selectedStudents.value.length} 名学生`)
+      assignDialogVisible.value = false
+      // 刷新任务列表
+      fetchTasks()
+    } else {
+      ElMessage.error(res.message || '分配失败')
+    }
+  } catch (error) {
+    console.error('分配任务失败:', error)
+    ElMessage.error('分配失败')
+  } finally {
+    assigning.value = false
+  }
+}
+
+ // 重置筛选条件
+ const resetFilter = () => {
+   Object.assign(filter, {
+     semester: '',
+     status: ''
+   })
+   // 重置分页到第一页
+   pagination.current = 1
+   fetchTasks()
+ }
+
+ // 处理每页显示数量变化
+ const handleSizeChange = (size) => {
+   pagination.size = size
+   pagination.current = 1 // 重置到第一页
+   fetchTasks()
+ }
+
+ // 处理当前页变化
+ const handleCurrentChange = (current) => {
+   pagination.current = current
+   fetchTasks()
+ }
+
+
 
 // 获取状态标签样式
 const getStatusTag = (status) => {
   const tagMap = {
     1: 'success',
-    0: 'info',
-    2: 'warning'
+    0: 'info'
   }
   return tagMap[status] || 'info'
 }
@@ -457,29 +610,17 @@ const getStatusTag = (status) => {
 const getStatusName = (status) => {
   const nameMap = {
     1: '进行中',
-    0: '已结束',
-    2: '已暂停'
+    0: '已结束'
   }
   return nameMap[status] || '未知'
 }
 
-// 获取评价者类型名称
-const getEvaluatorTypeName = (type) => {
-  const nameMap = {
-    'STUDENT': '学生',
-    'TEACHER': '教师',
-    'SUPERVISOR': '督导',
-    'LEADER': '领导',
-    'ENTERPRISE': '企业'
-  }
-  return nameMap[type] || type
-}
+
 
 onMounted(() => {
   fetchTasks()
   fetchCourses()
   fetchColleges()
-  fetchDepartments()
 })
 </script>
 
@@ -500,5 +641,39 @@ onMounted(() => {
 
 .el-form-item {
   margin-bottom: 20px;
+}
+
+.assign-dialog-content {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.task-info {
+  background-color: #f5f7fa;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.task-info h4 {
+  margin: 0 0 10px 0;
+  color: #303133;
+}
+
+.task-info p {
+  margin: 5px 0;
+  color: #606266;
+}
+
+.selection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.selection-header span {
+  font-weight: bold;
+  color: #303133;
 }
 </style> 

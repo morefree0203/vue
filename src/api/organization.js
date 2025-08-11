@@ -2,22 +2,99 @@
 // 包含学院管理、系管理、专业管理、班级管理等
 import request from '@/utils/request'
 
-// 学院管理相关接口
+// ==================== 学院管理 ====================
+
+// 获取学院列表
 export function getCollegeList(params) {
-  // return request.get('/api/organization/college', { params })
+  return request.get('/api/organization/college/list', { params })
 }
 
-// 系管理相关接口
-export function getDepartmentList(params) {
-  // return request.get('/api/organization/department', { params })
+// 添加学院
+export function addCollege(data) {
+  return request.post('/api/organization/college/add', data)
 }
 
-// 专业管理相关接口
-export function getMajorList(params) {
-  // return request.get('/api/organization/major', { params })
+// 更新学院
+export function updateCollege(data) {
+  return request.put('/api/organization/college/update', data)
 }
 
-// 班级管理相关接口
-export function getClassList(params) {
-  // return request.get('/api/organization/class', { params })
+// 删除学院
+export function deleteCollege(collegeId) {
+  return request.delete(`/api/organization/college/delete/${collegeId}`)
+}
+
+// 更新学院状态
+export function updateCollegeStatus(collegeId, status) {
+  return request.put(`/api/organization/college/status/${collegeId}`, null, {
+    params: { status }
+  })
+}
+
+// ==================== 系部管理 ====================
+
+// 获取所有系列表
+export function getAllDepartmentList(params) {
+  return request.get('/api/organization/department/list', { params })
+}
+
+// 根据学院ID获取系列表
+export function getDepartmentList(collegeId, params) {
+  return request.get(`/api/organization/department/list/${collegeId}`, { params })
+}
+
+// 添加系部
+export function addDepartment(data) {
+  return request.post('/api/organization/department/add', data)
+}
+
+// 更新系部
+export function updateDepartment(data) {
+  return request.put('/api/organization/department/update', data)
+}
+
+// 删除系部
+export function deleteDepartment(departmentId) {
+  return request.delete(`/api/organization/department/delete/${departmentId}`)
+}
+
+// 更新系部状态
+export function updateDepartmentStatus(departmentId, status) {
+  return request.put(`/api/organization/department/status/${departmentId}`, null, {
+    params: { status }
+  })
+}
+
+// ==================== 班级管理 ====================
+
+// 获取所有班级列表
+export function getAllClassList(params) {
+  return request.get('/api/organization/class/list', { params })
+}
+
+// 根据系ID获取班级列表
+export function getClassList(departmentId, params) {
+  return request.get(`/api/organization/class/list/${departmentId}`, { params })
+}
+
+// 添加班级
+export function addClass(data) {
+  return request.post('/api/organization/class/add', data)
+}
+
+// 更新班级
+export function updateClass(data) {
+  return request.put('/api/organization/class/update', data)
+}
+
+// 删除班级
+export function deleteClass(classId) {
+  return request.delete(`/api/organization/class/delete/${classId}`)
+}
+
+// 更新班级状态
+export function updateClassStatus(classId, status) {
+  return request.put(`/api/organization/class/status/${classId}`, null, {
+    params: { status }
+  })
 } 

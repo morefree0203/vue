@@ -111,24 +111,24 @@
     <!-- 评价详情标签页 -->
     <el-tabs v-model="activeTab" class="evaluation-tabs">
       <el-tab-pane label="学生评价" name="student">
-        <evaluation-list :evaluations="studentEvaluations" type="student" />
+        <evaluation-list-with-management :evaluations="studentEvaluations" type="student" @refresh="handleRefresh" />
       </el-tab-pane>
       <el-tab-pane label="同行评价" name="peer">
-        <evaluation-list :evaluations="peerEvaluations" type="peer" />
+        <evaluation-list-with-management :evaluations="peerEvaluations" type="peer" @refresh="handleRefresh" />
       </el-tab-pane>
       <el-tab-pane label="督导评价" name="supervisor">
-        <evaluation-list :evaluations="supervisorEvaluations" type="supervisor" />
+        <evaluation-list-with-management :evaluations="supervisorEvaluations" type="supervisor" @refresh="handleRefresh" />
       </el-tab-pane>
       <el-tab-pane label="领导评价" name="leader">
-        <evaluation-list :evaluations="leaderEvaluations" type="leader" />
+        <evaluation-list-with-management :evaluations="leaderEvaluations" type="leader" @refresh="handleRefresh" />
       </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import EvaluationList from './EvaluationList.vue'
+import { ref, computed, watch } from 'vue'
+import EvaluationListWithManagement from './EvaluationListWithManagement.vue'
 
 const props = defineProps({
   evaluationData: {
@@ -237,17 +237,19 @@ const getScoreColor = (ratio) => {
   return '#F56C6C' // 红色 - 较差
 }
 
-// 自动切换到有数据的第一个标签页
-import { watch } from 'vue'
+// 自动切换到有数据的第一个标签页（只在初始化时执行）
 watch([studentEvaluations, peerEvaluations, supervisorEvaluations, leaderEvaluations], () => {
-  if (studentEvaluations.value.length > 0) {
-    activeTab.value = 'student'
-  } else if (peerEvaluations.value.length > 0) {
-    activeTab.value = 'peer'
-  } else if (supervisorEvaluations.value.length > 0) {
-    activeTab.value = 'supervisor'
-  } else if (leaderEvaluations.value.length > 0) {
-    activeTab.value = 'leader'
+  // 只在activeTab为空时才自动设置，避免刷新时重置
+  if (!activeTab.value) {
+    if (studentEvaluations.value.length > 0) {
+      activeTab.value = 'student'
+    } else if (peerEvaluations.value.length > 0) {
+      activeTab.value = 'peer'
+    } else if (supervisorEvaluations.value.length > 0) {
+      activeTab.value = 'supervisor'
+    } else if (leaderEvaluations.value.length > 0) {
+      activeTab.value = 'leader'
+    }
   }
 }, { immediate: true })
 
@@ -263,6 +265,15 @@ watch([supervisorAvgScores, peerAvgScores, leaderAvgScores, studentAvgScores], (
     activeAvgRole.value = 'leader'
   }
 }, { immediate: true })
+
+// 处理刷新事件
+const handleRefresh = () => {
+  // 触发父组件刷新数据
+  emit('refresh')
+}
+
+// 定义emit
+const emit = defineEmits(['refresh'])
 
 </script>
 
@@ -360,4 +371,4 @@ watch([supervisorAvgScores, peerAvgScores, leaderAvgScores, studentAvgScores], (
 .avg-scores-display {
   margin-top: 16px;
 }
-</style> 
+</style>

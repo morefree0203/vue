@@ -2,11 +2,11 @@
     <div class="panel">
       <div class="panel-tabs">
         <div :class="['tab', tab==='account' && 'active']" @click="tab='account'">{{ $t('form.login') }}</div>
-        <div :class="['tab', tab==='phone' && 'active']" @click="tab='phone'">{{ $t('form.phoneLogin') }}</div>
+        <!-- <div :class="['tab', tab==='phone' && 'active']" @click="tab='phone'">{{ $t('form.phoneLogin') }}</div> -->
       </div>
       <div class="panel-content">
         <LoginFormAccount v-if="tab==='account'" />
-        <LoginFormPhone v-else />
+        <!-- <LoginFormPhone v-else /> -->
       </div>
     </div>
   </template>

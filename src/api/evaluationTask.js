@@ -1,0 +1,114 @@
+import request from '@/utils/request'
+
+/**
+ * 获取评价任务列表
+ */
+export function getEvaluationTasks(params) {
+  return request({
+    url: '/api/school-admin/evaluation-tasks',
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 创建评价任务
+ */
+export function createEvaluationTask(data) {
+  return request({
+    url: '/api/school-admin/evaluation-tasks',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 更新任务状态
+ */
+export function updateTaskStatus(taskId, status) {
+  return request({
+    url: `/api/school-admin/evaluation-tasks/${taskId}/status`,
+    method: 'put',
+    params: { status }
+  })
+}
+
+/**
+ * 删除评价任务
+ */
+export function deleteEvaluationTask(taskId) {
+  return request({
+    url: `/api/school-admin/evaluation-tasks/${taskId}`,
+    method: 'delete'
+  })
+}
+
+// 获取可分配的学生列表
+export function getAvailableStudents(params) {
+  return request({
+    url: '/api/school-admin/evaluation-tasks/available-students',
+    method: 'get',
+    params
+  })
+}
+
+// 分配任务给学生
+export function assignTaskToStudents(taskId, studentIds) {
+  return request({
+    url: `/api/school-admin/evaluation-tasks/${taskId}/assign`,
+    method: 'post',
+    data: studentIds
+  })
+}
+
+/**
+ * 获取任务分配列表
+ */
+export function getTaskAssignments(taskId) {
+  return request({
+    url: `/api/school-admin/evaluation-tasks/${taskId}/assignments`,
+    method: 'get'
+  })
+}
+
+
+/**
+ * 获取课程列表
+ */
+export function getCourseList() {
+  return request({
+    url: '/api/school-admin/courses',
+    method: 'get'
+  })
+}
+
+/**
+ * 获取学院列表
+ */
+export function getCollegeList() {
+  return request({
+    url: '/api/school-admin/colleges',
+    method: 'get'
+  })
+}
+
+/**
+ * 根据学院ID获取系列表
+ */
+export function getDepartmentList(collegeId) {
+  return request({
+    url: `/api/school-admin/departments/${collegeId}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 根据目标范围获取学生列表
+ */
+export function getStudentsByScope(targetScope, targetCollegeId, targetDepartmentId) {
+  return request({
+    url: '/api/school-admin/students',
+    method: 'get',
+    params: { targetScope, targetCollegeId, targetDepartmentId }
+  })
+}

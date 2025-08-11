@@ -257,7 +257,6 @@ const permissionTreeData = ref([
     children: [
       { id: 'organization:college', label: '学院管理' },
       { id: 'organization:department', label: '系管理' },
-      { id: 'organization:major', label: '专业管理' },
       { id: 'organization:class', label: '班级管理' }
     ]
   },

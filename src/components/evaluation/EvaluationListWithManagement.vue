@@ -6,8 +6,52 @@
       class="evaluation-card"
       shadow="hover"
     >
+      <!-- 评价头部信息 -->
+      <div class="evaluation-header">
+        <div class="evaluation-info">
+          <span class="evaluator-name">{{ getEvaluatorName(evaluation) }}</span>
+          <span class="evaluation-time">{{ formatTime(evaluation.createTime) }}</span>
+        </div>
+        <div class="management-actions">
+          <el-dropdown @command="handleManagementAction" trigger="click">
+            <el-button type="danger" size="small" plain>
+              管理操作
+              <el-icon class="el-icon--right"><arrow-down /></el-icon>
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <!-- 匿名用户只能删除评价 -->
+                <el-dropdown-item 
+                  v-if="evaluation.isAnonymous"
+                  :command="{ action: 'delete', evaluation: evaluation }"
+                >
+                  <el-icon><delete /></el-icon>
+                  删除评价
+                </el-dropdown-item>
+                
+                <!-- 非匿名用户的操作 -->
+                <template v-else>
+                  <el-dropdown-item 
+                    :command="{ action: 'delete', evaluation: evaluation }"
+                  >
+                    <el-icon><delete /></el-icon>
+                    删除评价
+                  </el-dropdown-item>
+                  <el-dropdown-item 
+                    :command="{ action: 'deleteUser', evaluation: evaluation }"
+                    divided
+                  >
+                    <el-icon><circle-close /></el-icon>
+                    删除用户账号（同时删除所有评价）
+                  </el-dropdown-item>
+                </template>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
+      </div>
 
-
+  
       <!-- 评价分数 -->
       <div class="evaluation-scores" v-if="evaluation.scores && evaluation.scores.length > 0">
         <div class="scores-title">评价指标</div>
@@ -54,8 +98,6 @@
           />
         </div>
       </div>
-
-
     </el-card>
 
     <!-- 空状态 -->
@@ -73,21 +115,55 @@
       <div class="close-btn" @click="closeImage">×</div>
     </div>
   </div>
+
+  <!-- 确认对话框 -->
+  <el-dialog v-model="confirmDialogVisible" :title="confirmDialogTitle" width="400px">
+    <div class="confirm-content">
+      <el-icon class="confirm-icon" :class="confirmIconClass">
+        <component :is="confirmIcon" />
+      </el-icon>
+      <p>{{ confirmDialogMessage }}</p>
+    </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="confirmDialogVisible = false">取消</el-button>
+        <el-button type="danger" @click="confirmAction">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { ArrowDown, Delete, CircleClose } from '@element-plus/icons-vue'
+import { deleteEvaluation, deleteUser } from '@/api/schooladmin'
+import { useUserStore } from '@/stores/user'
 
-defineProps({
+const props = defineProps({
   evaluations: {
     type: Array,
     default: () => []
+  },
+  type: {
+    type: String,
+    default: ''
   }
 })
+
+const userStore = useUserStore()
 
 // 图片放大相关
 const showImageModal = ref(false)
 const currentImage = ref('')
+
+// 确认对话框相关
+const confirmDialogVisible = ref(false)
+const confirmDialogTitle = ref('')
+const confirmDialogMessage = ref('')
+const confirmIcon = ref('')
+const confirmIconClass = ref('')
+const pendingAction = ref(null)
 
 // 处理评价图片数据
 const getEvaluationImages = (evaluation) => {
@@ -127,6 +203,84 @@ const closeImage = () => {
   showImageModal.value = false
   currentImage.value = ''
 }
+
+// 获取评价者姓名
+const getEvaluatorName = (evaluation) => {
+  if (evaluation.isAnonymous) {
+    return '匿名用户'
+  }
+  return evaluation.evaluatorName || '未知用户'
+}
+
+// 格式化时间
+const formatTime = (time) => {
+  if (!time) return ''
+  return new Date(time).toLocaleString('zh-CN')
+}
+
+// 处理管理操作
+const handleManagementAction = (command) => {
+  const { action, evaluation } = command
+  
+  switch (action) {
+    case 'delete':
+      showConfirmDialog('删除评价', '确定要删除这条评价吗？此操作不可恢复。', 'Delete', 'warning')
+      break
+    case 'deleteUser':
+      showConfirmDialog('删除用户账号', '确定要删除该用户的账号吗？删除后将同时删除该用户的所有评价、图片和分数数据。此操作不可恢复。', 'CircleClose', 'error')
+      break
+  }
+  
+  pendingAction.value = { action, evaluation }
+}
+
+// 显示确认对话框
+const showConfirmDialog = (title, message, icon, type) => {
+  confirmDialogTitle.value = title
+  confirmDialogMessage.value = message
+  confirmIcon.value = icon
+  confirmIconClass.value = type
+  confirmDialogVisible.value = true
+}
+
+// 确认操作
+const confirmAction = async () => {
+  if (!pendingAction.value) return
+  
+  const { action, evaluation } = pendingAction.value
+  
+  try {
+    let response
+    const adminId = userStore.userInfo?.Id 
+    
+    switch (action) {
+      case 'delete':
+        response = await deleteEvaluation(evaluation.id, evaluation.type, userStore.userInfo)
+        break
+      case 'deleteUser':
+        console.log(evaluation)
+        response = await deleteUser(evaluation.evaluatorId, evaluation.type, userStore.userInfo)
+        break
+    }
+    
+    if (response.code === '200') {
+      ElMessage.success('操作成功')
+      // 触发父组件刷新数据
+      emit('refresh')
+    } else {
+      ElMessage.error(response.message || '操作失败')
+    }
+  } catch (error) {
+    console.error('操作失败:', error)
+    ElMessage.error('操作失败')
+  } finally {
+    confirmDialogVisible.value = false
+    pendingAction.value = null
+  }
+}
+
+// 定义emit
+const emit = defineEmits(['refresh'])
 </script>
 
 <style scoped>
@@ -166,18 +320,37 @@ const closeImage = () => {
 /* 评价头部 */
 .evaluation-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 16px;
   padding-bottom: 12px;
   border-bottom: 2px solid #f0f0f0;
+}
+
+.evaluation-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.evaluator-name {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 14px;
 }
 
 .evaluation-time {
   font-size: 12px;
   color: #909399;
   background: #f8f9fa;
-  padding: 4px 8px;
+  padding: 2px 6px;
   border-radius: 4px;
+  display: inline-block;
+}
+
+.management-actions {
+  display: flex;
+  gap: 8px;
 }
 
 /* 评价分数 */
@@ -188,64 +361,38 @@ const closeImage = () => {
 .scores-title {
   font-weight: 600;
   color: #2c3e50;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   font-size: 14px;
-  padding-left: 4px;
-  border-left: 3px solid #409EFF;
 }
 
 .scores-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
 }
 
 .score-item {
-  padding: 16px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border-radius: 8px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
   border: 1px solid #e8eaec;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.score-item:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border-color: #409EFF;
-}
-
-.score-item::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #409EFF, #67C23A);
-  border-radius: 0 0 8px 8px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.score-item:hover::after {
-  opacity: 1;
 }
 
 .score-label {
   font-weight: 500;
   color: #2c3e50;
-  margin-bottom: 8px;
-  font-size: 14px;
+  margin-bottom: 6px;
+  font-size: 13px;
 }
 
 .score-value {
   display: flex;
   align-items: baseline;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .score-number {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bold;
   color: #409EFF;
   margin-right: 4px;
@@ -361,4 +508,36 @@ const closeImage = () => {
   background: #fff;
   transform: scale(1.1);
 }
-</style> 
+
+/* 确认对话框样式 */
+.confirm-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 0;
+}
+
+.confirm-icon {
+  font-size: 24px;
+}
+
+.confirm-icon.warning {
+  color: #E6A23C;
+}
+
+.confirm-icon.error {
+  color: #F56C6C;
+}
+
+.confirm-content p {
+  margin: 0;
+  color: #606266;
+  line-height: 1.6;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+</style>

@@ -1,14 +1,17 @@
 <template>
+  <!-- 管理员权限管理主页面 -->
   <div class="admin-management">
+    <!-- 管理员权限管理卡片 -->
     <el-card>
       <template #header>
         <div class="card-header">
           <span>管理员权限管理</span>
+          <!-- 打开分配管理员权限对话框按钮 -->
           <el-button type="primary" @click="showAssignDialog">分配管理员权限</el-button>
         </div>
       </template>
 
-      <!-- 搜索区域 -->
+      <!-- 搜索区域：按姓名和管理员级别筛选管理员 -->
       <div class="search-area">
         <el-form :model="searchForm" inline>
           <el-form-item label="管理员姓名">
@@ -29,7 +32,7 @@
         </el-form>
       </div>
 
-      <!-- 表格区域 -->
+      <!-- 管理员列表表格 -->
       <el-table :data="adminList" v-loading="loading" stripe>
         <el-table-column prop="adminId" label="用户ID" width="120" />
         <el-table-column prop="name" label="管理员姓名" width="120" />
@@ -51,13 +54,14 @@
         </el-table-column>
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
+            <!-- 编辑和撤销权限按钮 -->
             <el-button type="primary" size="small" @click="showEditDialog(row)">编辑权限</el-button>
             <el-button type="warning" size="small" @click="handleRevoke(row)">撤销权限</el-button>
           </template>
         </el-table-column>
       </el-table>
 
-      <!-- 分页 -->
+      <!-- 分页组件 -->
       <div class="pagination">
         <el-pagination
           v-model:current-page="pagination.current"
@@ -72,23 +76,25 @@
     </el-card>
 
     <!-- 分配管理员权限对话框 -->
+    <!--   :close-on-click-modal="false"  控制是否可以通过点击遮罩层（模态框）关闭对话框。 -->
     <el-dialog 
       title="分配管理员权限" 
       v-model="assignDialogVisible" 
       width="800px"
       :close-on-click-modal="false"
+      @close="handleAssignDialogClose"
     >
       <div class="assign-dialog-content">
-        <!-- 用户搜索 -->
+        <!-- 用户搜索区域 -->
         <div class="user-search">
           <el-form :model="userSearchForm" inline>
-                         <el-form-item label="用户角色">
-               <el-select v-model="userSearchForm.role" placeholder="请选择用户角色" clearable style="width: 140px;">
-                 <el-option label="教师" value="teacher" />
-                 <el-option label="督导" value="supervisor" />
-                 <el-option label="领导" value="leader" />
-               </el-select>
-             </el-form-item>
+            <el-form-item label="用户角色">
+              <el-select v-model="userSearchForm.role" placeholder="请选择用户角色" clearable style="width: 140px;">
+                <el-option label="教师" value="teacher" />
+                <el-option label="督导" value="supervisor" />
+                <el-option label="领导" value="leader" />
+              </el-select>
+            </el-form-item>
             <el-form-item label="用户姓名">
               <el-input v-model="userSearchForm.name" placeholder="请输入用户姓名" clearable style="width: 200px;" />
             </el-form-item>
@@ -99,28 +105,28 @@
           </el-form>
         </div>
 
-                 <!-- 用户列表 -->
-         <div class="user-list">
+        <!-- 用户列表（可选择分配权限的用户） -->
+        <div class="user-list">
           <el-table :data="userList" v-loading="userLoading" stripe max-height="300">
             <el-table-column prop="id" label="用户ID" width="120" />
             <el-table-column prop="name" label="姓名" width="120" />
-                         <el-table-column prop="role" label="当前角色" width="150">
-               <template #default="{ row }">
-                 <div v-if="row.role && row.role.trim()" >
-                   <el-tag 
-                     v-for="role in getRoleList(row.role)" 
-                     :key="role"
-                     :type="getOriginalRoleType(role)"
-                     size="small"
-                     style="margin-right: 4px; margin-bottom: 2px;"
-                   >
-                     {{ getOriginalRoleText(role) }}
-                   </el-tag>
-                 </div>
-                 <span v-else style="color: #c0c4cc;">-</span>
-               </template>
-             </el-table-column>
-             <el-table-column prop="phoneNumber" label="联系电话" width="120" />
+            <el-table-column prop="role" label="当前角色" width="150">
+              <template #default="{ row }">
+                <div v-if="row.role && row.role.trim()" >
+                  <el-tag 
+                    v-for="role in getRoleList(row.role)" 
+                    :key="role"
+                    :type="getOriginalRoleType(role)"
+                    size="small"
+                    style="margin-right: 4px; margin-bottom: 2px;"
+                  >
+                    {{ getOriginalRoleText(role) }}
+                  </el-tag>
+                </div>
+                <span v-else style="color: #c0c4cc;">-</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="phoneNumber" label="联系电话" width="120" />
             <el-table-column prop="email" label="邮箱" width="180" />
             <el-table-column label="操作" width="120">
               <template #default="{ row }">
@@ -130,7 +136,7 @@
           </el-table>
         </div>
 
-        <!-- 权限分配表单 -->
+        <!-- 权限分配表单（选中用户后显示） -->
         <div class="permission-form" v-if="selectedUser">
           <el-divider>为 {{ selectedUser.name }} 分配管理员权限</el-divider>
           <el-form :model="assignForm" :rules="assignRules" ref="assignFormRef" label-width="120px">
@@ -142,7 +148,6 @@
                 <el-option label="系级管理员" value="department_admin" />
               </el-select>
             </el-form-item>
-            
             <!-- 院级管理员需要选择学院 -->
             <el-form-item v-if="assignForm.adminLevel === 'college_admin'" label="所属学院" prop="collegeId">
               <el-select v-model="assignForm.collegeId" placeholder="请选择学院" @change="handleAssignCollegeChange" style="width: 100%;">
@@ -154,7 +159,6 @@
                 />
               </el-select>
             </el-form-item>
-            
             <!-- 系级管理员需要选择学院和系 -->
             <el-form-item v-if="assignForm.adminLevel === 'department_admin'" label="所属学院" prop="collegeId">
               <el-select v-model="assignForm.collegeId" placeholder="请选择学院" @change="handleAssignCollegeChange" style="width: 100%;">
@@ -166,7 +170,6 @@
                 />
               </el-select>
             </el-form-item>
-            
             <el-form-item v-if="assignForm.adminLevel === 'department_admin'" label="所属系" prop="departmentId">
               <el-select v-model="assignForm.departmentId" placeholder="请选择系" :disabled="!assignForm.collegeId" style="width: 100%;">
                 <el-option 
@@ -177,7 +180,6 @@
                 />
               </el-select>
             </el-form-item>
-            
             <el-form-item label="状态" prop="status">
               <el-radio-group v-model="assignForm.status">
                 <el-radio :label="1">启用</el-radio>
@@ -188,81 +190,79 @@
         </div>
       </div>
       <template #footer>
-        <el-button @click="assignDialogVisible = false">取消</el-button>
+        <el-button @click="handleAssignDialogClose">取消</el-button>
         <el-button type="primary" @click="handleAssign" :disabled="!selectedUser">确定分配</el-button>
       </template>
     </el-dialog>
 
-    <!-- 编辑权限框 -->
+    <!-- 编辑管理员权限对话框 -->
     <el-dialog 
       title="编辑管理员权限" 
       v-model="editDialogVisible" 
       width="600px"
       :close-on-click-modal="false"
+      @close="handleEditDialogClose"
     >
-          <el-form :model="editForm" :rules="editRules" ref="editFormRef" label-width="120px">
-            <el-form-item label="用户ID" prop="adminId">
-              <el-input v-model="editForm.adminId" disabled />
-            </el-form-item>
-            <el-form-item label="管理员姓名" prop="name">
-              <el-input v-model="editForm.name" disabled />
-            </el-form-item>
-            <el-form-item label="管理员级别" prop="adminLevel">
-              <el-select v-model="editForm.adminLevel" placeholder="请选择管理员级别" @change="handleEditLevelChange" style="width: 100%;">
-                <el-option label="系统运维管理员" value="system_admin" />
-                <el-option label="校级管理员" value="school_admin" />
-                <el-option label="院级管理员" value="college_admin" />
-                <el-option label="系级管理员" value="department_admin" />
-              </el-select>
-              <div style="font-size: 12px; color: #909399; margin-top: 5px;">
-                注意：高级管理员包含低级管理员的所有权限，可以修改级别和状态
-              </div>
-            </el-form-item>
-            
-                         <!-- 院级管理员需要选择学院 -->
-             <el-form-item v-if="editForm.adminLevel === 'college_admin'" label="所属学院" prop="collegeId">
-               <el-select v-model="editForm.collegeId" placeholder="请选择学院" @change="handleEditCollegeChange" style="width: 100%;">
-                 <el-option 
-                   v-for="college in collegeList" 
-                   :key="college.collegeId" 
-                   :label="college.name" 
-                   :value="college.collegeId" 
-                 />
-               </el-select>
-             </el-form-item>
-             
-             <!-- 系级管理员需要选择学院和系 -->
-             <el-form-item v-if="editForm.adminLevel === 'department_admin'" label="所属学院" prop="collegeId">
-               <el-select v-model="editForm.collegeId" placeholder="请选择学院" @change="handleEditCollegeChange" style="width: 100%;">
-                 <el-option 
-                   v-for="college in collegeList" 
-                   :key="college.collegeId" 
-                   :label="college.name" 
-                   :value="college.collegeId" 
-                 />
-               </el-select>
-             </el-form-item>
-             
-             <el-form-item v-if="editForm.adminLevel === 'department_admin'" label="所属系" prop="departmentId">
-               <el-select v-model="editForm.departmentId" placeholder="请选择系" :disabled="!editForm.collegeId" style="width: 100%;">
-                 <el-option 
-                   v-for="department in departmentList" 
-                   :key="department.departmentId" 
-                   :label="department.name" 
-                   :value="department.departmentId" 
-                 />
-               </el-select>
-             </el-form-item>
-            
-            <el-form-item label="状态" prop="status">
-              <el-radio-group v-model="editForm.status">
-                <el-radio :label="1">启用</el-radio>
-                <el-radio :label="0">禁用</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-form>
+      <!-- 编辑表单 -->
+      <el-form :model="editForm" :rules="editRules" ref="editFormRef" label-width="120px">
+        <el-form-item label="用户ID" prop="adminId">
+          <el-input v-model="editForm.adminId" disabled />
+        </el-form-item>
+        <el-form-item label="管理员姓名" prop="name">
+          <el-input v-model="editForm.name" disabled />
+        </el-form-item>
+        <el-form-item label="管理员级别" prop="adminLevel">
+          <el-select v-model="editForm.adminLevel" placeholder="请选择管理员级别" @change="handleEditLevelChange" style="width: 100%;">
+            <el-option label="系统运维管理员" value="system_admin" />
+            <el-option label="校级管理员" value="school_admin" />
+            <el-option label="院级管理员" value="college_admin" />
+            <el-option label="系级管理员" value="department_admin" />
+          </el-select>
+          <div style="font-size: 12px; color: #909399; margin-top: 5px;">
+            注意：高级管理员包含低级管理员的所有权限，可以修改级别和状态
+          </div>
+        </el-form-item>
+        <!-- 院级管理员需要选择学院 -->
+        <el-form-item v-if="editForm.adminLevel === 'college_admin'" label="所属学院" prop="collegeId">
+          <el-select v-model="editForm.collegeId" placeholder="请选择学院" @change="handleEditCollegeChange" style="width: 100%;">
+            <el-option 
+              v-for="college in collegeList" 
+              :key="college.collegeId" 
+              :label="college.name" 
+              :value="college.collegeId" 
+            />
+          </el-select>
+        </el-form-item>
+        <!-- 系级管理员需要选择学院和系 -->
+        <el-form-item v-if="editForm.adminLevel === 'department_admin'" label="所属学院" prop="collegeId">
+          <el-select v-model="editForm.collegeId" placeholder="请选择学院" @change="handleEditCollegeChange" style="width: 100%;">
+            <el-option 
+              v-for="college in collegeList" 
+              :key="college.collegeId" 
+              :label="college.name" 
+              :value="college.collegeId" 
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="editForm.adminLevel === 'department_admin'" label="所属系" prop="departmentId">
+          <el-select v-model="editForm.departmentId" placeholder="请选择系" :disabled="!editForm.collegeId" style="width: 100%;">
+            <el-option 
+              v-for="department in departmentList" 
+              :key="department.departmentId" 
+              :label="department.name" 
+              :value="department.departmentId" 
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-radio-group v-model="editForm.status">
+            <el-radio :label="1">启用</el-radio>
+            <el-radio :label="0">禁用</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
       <template #footer>
-        <el-button @click="editDialogVisible = false">取消</el-button>
+        <el-button @click="handleEditDialogClose">取消</el-button>
         <el-button type="primary" @click="handleEditSubmit">确定</el-button>
       </template>
     </el-dialog>
@@ -270,30 +270,31 @@
 </template>
 
 <script setup>
+// 引入Vue响应式API和Element Plus组件
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getAdminList, getUsersByRole, assignAdminRole, updateAdmin, revokeAdminRole, getCollegeList, getDepartmentList } from '@/api/admin'
 
-// 响应式数据
-const loading = ref(false)
-const adminList = ref([])
-const assignDialogVisible = ref(false)
-const editDialogVisible = ref(false)
-const assignFormRef = ref()
-const editFormRef = ref()
+// ========== 响应式数据定义 ==========
+const loading = ref(false) // 管理员列表加载状态
+const adminList = ref([]) // 管理员列表
+const assignDialogVisible = ref(false) // 分配权限对话框显示状态
+const editDialogVisible = ref(false) // 编辑权限对话框显示状态
+const assignFormRef = ref() // 分配表单ref
+const editFormRef = ref() // 编辑表单ref
 
 // 用户搜索相关
-const userLoading = ref(false)
-const userList = ref([])
-const selectedUser = ref(null)
+const userLoading = ref(false) // 用户列表加载状态
+const userList = ref([]) // 可分配权限的用户列表
+const selectedUser = ref(null) // 当前选中的用户
 const userSearchForm = reactive({
   role: '',
   name: ''
 })
 
 // 学院和系数据
-const collegeList = ref([])
-const departmentList = ref([])
+const collegeList = ref([]) // 学院列表
+const departmentList = ref([]) // 系列表
 
 // 搜索表单
 const searchForm = reactive({
@@ -326,7 +327,8 @@ const editForm = reactive({
   departmentId: ''
 })
 
-// 表单验证规则
+// ========== 表单验证规则 ==========
+// 分配表单验证规则
 const assignRules = {
   adminLevel: [{ required: true, message: '请选择管理员级别', trigger: 'change' }],
   collegeId: [
@@ -335,7 +337,9 @@ const assignRules = {
       message: '请选择所属学院', 
       trigger: 'change',
       validator: (rule, value, callback) => {
-        if (assignForm.adminLevel === 'college_admin' || assignForm.adminLevel === 'department_admin') {
+        // 使用响应式数据确保验证器能正确获取当前值
+        const currentLevel = assignForm.adminLevel
+        if (currentLevel === 'college_admin' || currentLevel === 'department_admin') {
           if (!value) {
             callback(new Error('请选择所属学院'))
           } else {
@@ -353,7 +357,9 @@ const assignRules = {
       message: '请选择所属系', 
       trigger: 'change',
       validator: (rule, value, callback) => {
-        if (assignForm.adminLevel === 'department_admin') {
+        // 使用响应式数据确保验证器能正确获取当前值
+        const currentLevel = assignForm.adminLevel
+        if (currentLevel === 'department_admin') {
           if (!value) {
             callback(new Error('请选择所属系'))
           } else {
@@ -367,6 +373,7 @@ const assignRules = {
   ]
 }
 
+// 编辑表单验证规则
 const editRules = {
   adminLevel: [{ required: true, message: '请选择管理员级别', trigger: 'change' }],
   collegeId: [
@@ -375,7 +382,9 @@ const editRules = {
       message: '请选择所属学院', 
       trigger: 'change',
       validator: (rule, value, callback) => {
-        if (editForm.adminLevel === 'college_admin' || editForm.adminLevel === 'department_admin') {
+        // 使用响应式数据确保验证器能正确获取当前值
+        const currentLevel = editForm.adminLevel
+        if (currentLevel === 'college_admin' || currentLevel === 'department_admin') {
           if (!value) {
             callback(new Error('请选择所属学院'))
           } else {
@@ -393,7 +402,9 @@ const editRules = {
       message: '请选择所属系', 
       trigger: 'change',
       validator: (rule, value, callback) => {
-        if (editForm.adminLevel === 'department_admin') {
+        // 使用响应式数据确保验证器能正确获取当前值
+        const currentLevel = editForm.adminLevel
+        if (currentLevel === 'department_admin') {
           if (!value) {
             callback(new Error('请选择所属系'))
           } else {
@@ -407,7 +418,7 @@ const editRules = {
   ]
 }
 
-// 方法
+// ========== 管理员列表加载、搜索、分页等方法 ==========
 const loadData = async () => {
   loading.value = true
   try {
@@ -453,11 +464,11 @@ const handleCurrentChange = (current) => {
   loadData()
 }
 
-// 分配权限相关方法
+// ========== 分配权限相关方法 ==========
 const showAssignDialog = () => {
   assignDialogVisible.value = true
   selectedUser.value = null
-  Object.assign(assignForm, { adminLevel: '', status: 1, collegeId: '', departmentId: '' })
+  clearAssignForm()
   searchUsers()
 }
 
@@ -519,15 +530,15 @@ const handleAssign = async () => {
   }
 }
 
-// 编辑相关方法
+// ========== 编辑权限相关方法 ==========
 const showEditDialog = async (row) => {
   Object.assign(editForm, row)
   editDialogVisible.value = true
   
   // 如果是系级管理员，需要加载对应的系列表
-  if (row.adminLevel === 'department_admin' && row.collegeId) {
-    await loadDepartmentList(row.collegeId)
-  }
+  // if (row.adminLevel === 'department_admin' && row.collegeId) {
+  //   await loadDepartmentList(row.collegeId)
+  // }
 }
 
 const handleEditSubmit = async () => {
@@ -580,9 +591,14 @@ const handleEditSubmit = async () => {
   }
 }
 
-// 撤销权限
+// ========== 撤销权限 ==========
 const handleRevoke = async (row) => {
   try {
+    // ElMessageBox.confirm 会正常执行后面的代码。
+    // 如果没有抛出异常，代码会继续执行 await revokeAdminRole(row.adminId)。
+    // 用户点击“取消”：
+    // ElMessageBox.confirm 会抛出一个错误，错误对象的值为 'cancel'。
+    // 代码会进入 catch 块中
     await ElMessageBox.confirm(`确定要撤销 ${row.name} 的管理员权限吗？`, '提示', { type: 'warning' })
     const res = await revokeAdminRole(row.adminId)
     if (res.code === '200') {
@@ -598,7 +614,7 @@ const handleRevoke = async (row) => {
   }
 }
 
-// 工具方法
+// ========== 工具方法 ==========
 const getAdminLevelText = (level) => {
   const levelMap = {
     'system_admin': '系统运维管理员',
@@ -652,10 +668,11 @@ const getRoleList = (roleString) => {
   if (!roleString || roleString.trim() === '') {
     return []
   }
+  // .filter(role => role)：用于筛选出数组中非空的字符串，确保最终结果中没有空字符串。
   return roleString.split(',').map(role => role.trim()).filter(role => role)
 }
 
-// 获取学院列表
+// ========== 学院/系数据加载 ==========
 const loadCollegeList = async () => {
   try {
     const res = await getCollegeList()
@@ -683,17 +700,27 @@ const loadDepartmentList = async (collegeId) => {
   }
 }
 
-// 分配权限相关的事件处理
+// ========== 分配/编辑表单的级联事件处理 ==========
 const handleAssignLevelChange = (adminLevel) => {
   // 清空学院和系的选择
   assignForm.collegeId = ''
   assignForm.departmentId = ''
   departmentList.value = []
+  
+  // 清除相关字段的验证错误
+  if (assignFormRef.value) {
+    assignFormRef.value.clearValidate(['collegeId', 'departmentId'])
+  }
 }
 
 const handleAssignCollegeChange = (collegeId) => {
   assignForm.departmentId = ''
   loadDepartmentList(collegeId)
+  
+  // 清除系字段的验证错误
+  if (assignFormRef.value) {
+    assignFormRef.value.clearValidate(['departmentId'])
+  }
 }
 
 // 编辑权限相关的事件处理
@@ -702,13 +729,73 @@ const handleEditLevelChange = (adminLevel) => {
   editForm.collegeId = ''
   editForm.departmentId = ''
   departmentList.value = []
+  
+  // 清除相关字段的验证错误
+  if (editFormRef.value) {
+    editFormRef.value.clearValidate(['collegeId', 'departmentId'])
+  }
 }
 
 const handleEditCollegeChange = (collegeId) => {
   editForm.departmentId = ''
   loadDepartmentList(collegeId)
+  
+  // 清除系字段的验证错误
+  if (editFormRef.value) {
+    editFormRef.value.clearValidate(['departmentId'])
+  }
 }
 
+// ========== 表单清理和重置方法 ==========
+// 清理分配表单
+const clearAssignForm = () => {
+  Object.assign(assignForm, {
+    adminLevel: '',
+    status: 1,
+    collegeId: '',
+    departmentId: ''
+  })
+  departmentList.value = []
+  
+  // 清除表单验证错误
+  if (assignFormRef.value) {
+    assignFormRef.value.clearValidate()
+  }
+}
+
+// 清理编辑表单
+const clearEditForm = () => {
+  Object.assign(editForm, {
+    adminId: '',
+    name: '',
+    adminLevel: '',
+    status: 1,
+    collegeId: '',
+    departmentId: ''
+  })
+  departmentList.value = []
+  
+  // 清除表单验证错误
+  if (editFormRef.value) {
+    editFormRef.value.clearValidate()
+  }
+}
+
+// ========== 对话框关闭处理 ==========
+// 处理分配对话框关闭
+const handleAssignDialogClose = () => {
+  assignDialogVisible.value = false
+  selectedUser.value = null
+  clearAssignForm()
+}
+
+// 处理编辑对话框关闭
+const handleEditDialogClose = () => {
+  editDialogVisible.value = false
+  clearEditForm()
+}
+
+// ========== 页面初始化 ==========
 onMounted(() => {
   loadData()
   loadCollegeList()
@@ -716,100 +803,39 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.admin-management {
-  padding: 20px;
-}
+/* 页面整体布局 */
+.admin-management { padding: 20px; }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+/* 卡片头部样式 */
+.card-header { display: flex; justify-content: space-between; align-items: center; }
 
-.search-area {
-  margin-bottom: 20px;
-  padding: 20px;
-  background-color: #f5f7fa;
-  border-radius: 4px;
-}
+/* 搜索区域样式 */
+.search-area { margin-bottom: 20px; padding: 20px; background-color: #f5f7fa; border-radius: 4px; }
+.search-area .el-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+.search-area .el-form-item { margin-bottom: 0; margin-right: 0; }
 
-.search-area .el-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: flex-end;
-}
+/* 分页样式 */
+.pagination { margin-top: 20px; text-align: right; }
 
-.search-area .el-form-item {
-  margin-bottom: 0;
-  margin-right: 0;
-}
+/* 分配权限对话框内容样式 */
+.assign-dialog-content { /* 移除固定高度和滚动条 */ }
 
-.pagination {
-  margin-top: 20px;
-  text-align: right;
-}
+/* 用户搜索区域样式 */
+.user-search { margin-bottom: 20px; padding: 15px; background-color: #f5f7fa; border-radius: 4px; }
+.user-search .el-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+.user-search .el-form-item { margin-bottom: 0; margin-right: 0; }
 
-.assign-dialog-content {
-  /* 移除固定高度和滚动条 */
-}
+/* 用户列表样式 */
+.user-list { margin-bottom: 20px; }
 
-.user-search {
-  margin-bottom: 20px;
-  padding: 15px;
-  background-color: #f5f7fa;
-  border-radius: 4px;
-}
+/* 权限分配/编辑表单样式 */
+.permission-form { padding: 15px; background-color: #f0f9ff; border-radius: 4px; }
+.permission-form .el-form-item { margin-bottom: 20px; }
+.permission-form .el-select { width: 100%; }
 
-.user-search .el-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: flex-end;
-}
-
-.user-search .el-form-item {
-  margin-bottom: 0;
-  margin-right: 0;
-}
-
-.user-list {
-  margin-bottom: 20px;
-}
-
-
-.permission-form {
-  padding: 15px;
-  background-color: #f0f9ff;
-  border-radius: 4px;
-}
-
-.permission-form .el-form-item {
-  margin-bottom: 20px;
-}
-
-.permission-form .el-select {
-  width: 100%;
-}
-
-/* 确保对话框内容不会挤压 */
-.el-dialog__body {
-  padding: 20px;
-  max-height: 80vh; /* 限制最大高度为视口高度的80% */
-}
-
-.el-dialog__footer {
-  padding: 10px 20px 20px;
-}
-
-/* 让对话框能够根据内容自适应高度 */
-.el-dialog {
-  display: flex;
-  flex-direction: column;
-}
-
-.el-dialog__body {
-  flex: 1;
-  overflow: visible;
-}
+/* 对话框内容自适应高度 */
+.el-dialog__body { padding: 20px; max-height: 80vh; }
+.el-dialog__footer { padding: 10px 20px 20px; }
+.el-dialog { display: flex; flex-direction: column; }
+.el-dialog__body { flex: 1; overflow: visible; }
 </style> 
