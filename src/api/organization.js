@@ -5,8 +5,15 @@ import request from '@/utils/request'
 // ==================== 学院管理 ====================
 
 // 获取学院列表
-export function getCollegeList(params) {
-  return request.get('/api/organization/college/list', { params })
+export function getCollegeList(params, userInfo) {
+  return request.get('/api/organization/college/list', { 
+    params: {
+      ...params,
+      userRole: userInfo?.role,
+      userCollegeId: userInfo?.collegeId,
+      userDepartmentId: userInfo?.departmentId
+    }
+  })
 }
 
 // 添加学院
@@ -34,8 +41,15 @@ export function updateCollegeStatus(collegeId, status) {
 // ==================== 系部管理 ====================
 
 // 获取所有系列表
-export function getAllDepartmentList(params) {
-  return request.get('/api/organization/department/list', { params })
+export function getAllDepartmentList(params, userInfo) {
+  return request.get('/api/organization/department/list', { 
+    params: {
+      ...params,
+      userRole: userInfo?.role,
+      userCollegeId: userInfo?.collegeId,
+      userDepartmentId: userInfo?.departmentId
+    }
+  })
 }
 
 // 根据学院ID获取系列表

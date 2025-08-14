@@ -9,6 +9,7 @@
         </div>
         <div class="action-buttons">
           <el-button 
+            v-if="userStore.userInfo?.role === 'school_admin'"
             type="primary" 
             @click="goToEnterpriseEvaluation"
             :icon="OfficeBuilding"

@@ -3,11 +3,16 @@ import request from '@/utils/request'
 /**
  * 获取评价任务列表
  */
-export function getEvaluationTasks(params) {
+export function getEvaluationTasks(params, userInfo) {
   return request({
     url: '/api/school-admin/evaluation-tasks',
     method: 'get',
-    params
+    params: {
+      ...params,
+      userRole: userInfo?.role,
+      userCollegeId: userInfo?.collegeId,
+      userDepartmentId: userInfo?.departmentId
+    }
   })
 }
 
@@ -75,20 +80,30 @@ export function getTaskAssignments(taskId) {
 /**
  * 获取课程列表
  */
-export function getCourseList() {
+export function getCourseList(userInfo) {
   return request({
     url: '/api/school-admin/courses',
-    method: 'get'
+    method: 'get',
+    params: {
+      userRole: userInfo?.role,
+      userCollegeId: userInfo?.collegeId,
+      userDepartmentId: userInfo?.departmentId
+    }
   })
 }
 
 /**
  * 获取学院列表
  */
-export function getCollegeList() {
+export function getCollegeList(userInfo) {
   return request({
     url: '/api/school-admin/colleges',
-    method: 'get'
+    method: 'get',
+    params: {
+      userRole: userInfo?.role,
+      userCollegeId: userInfo?.collegeId,
+      userDepartmentId: userInfo?.departmentId
+    }
   })
 }
 

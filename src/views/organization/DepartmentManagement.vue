@@ -3,8 +3,19 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>系管理</span>
-          <el-button type="primary" @click="showAddDialog">添加系</el-button>
+          <div class="header-left">
+            <span>系管理</span>
+            <el-tag v-if="userStore.userInfo?.role === 'department_admin'" type="warning" style="margin-left: 10px;">
+              系级管理员没有系管理权限
+            </el-tag>
+          </div>
+          <el-button 
+            v-if="userStore.userInfo?.role !== 'department_admin'"
+            type="primary" 
+            @click="showAddDialog"
+          >
+            添加系
+          </el-button>
         </div>
       </template>
 
@@ -90,6 +101,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { useUserStore } from '@/stores/user'
 import {
   getCollegeList,
   getAllDepartmentList,
@@ -97,6 +109,8 @@ import {
   updateDepartment,
   deleteDepartment
 } from '@/api/organization'
+
+const userStore = useUserStore()
 
 // 响应式数据
 const loading = ref(false)
@@ -151,7 +165,7 @@ const loadDepartmentList = async () => {
       departmentCode: searchForm.departmentCode
     }
 
-    const response = await getAllDepartmentList(params)
+    const response = await getAllDepartmentList(params, userStore.userInfo)
     if (response.code === '200') {
       departmentList.value = response.data.departments || []
       pagination.total = response.data.total || 0
@@ -168,7 +182,7 @@ const loadDepartmentList = async () => {
 // 加载学院列表
 const loadCollegeList = async () => {
   try {
-    const response = await getCollegeList({})
+    const response = await getCollegeList({}, userStore.userInfo)
     if (response.code === '200') {
       collegeList.value = response.data.colleges || []
     } else {
@@ -291,6 +305,11 @@ const deleteDepartmentHandler = async (department) => {
 .card-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
   align-items: center;
 }
 

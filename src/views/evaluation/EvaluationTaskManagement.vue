@@ -4,8 +4,19 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>评价任务管理</span>
-          <el-button type="primary" @click="showCreateDialog">发布评价任务</el-button>
+          <div class="header-left">
+            <span>评价任务管理</span>
+            <el-tag v-if="userStore.userInfo?.role === 'department_admin'" type="warning" style="margin-left: 10px;">
+              系级管理员只能查看任务，不能发布任务
+            </el-tag>
+          </div>
+          <el-button 
+            v-if="userStore.userInfo?.role !== 'department_admin'"
+            type="primary" 
+            @click="showCreateDialog"
+          >
+            发布评价任务
+          </el-button>
         </div>
       </template>
 
@@ -300,7 +311,7 @@ const taskFormRef = ref()
        pageSize: Number(pagination.size)
      }
      
-     const res = await getEvaluationTasks(params)
+     const res = await getEvaluationTasks(params, userStore.userInfo)
      if (res.code === '200') {
        // 处理分页数据
        if (res.data && res.data.records) {
@@ -324,7 +335,7 @@ const taskFormRef = ref()
 // 获取课程列表
 const fetchCourses = async () => {
   try {
-    const res = await getCourseList()
+    const res = await getCourseList(userStore.userInfo)
     if (res.code === '200') {
       courseList.value = res.data
     } else {
@@ -339,7 +350,7 @@ const fetchCourses = async () => {
 // 获取学院列表
 const fetchColleges = async () => {
   try {
-    const res = await getCollegeList()
+    const res = await getCollegeList(userStore.userInfo)
     if (res.code === '200') {
       collegeList.value = res.data
     } else {
@@ -428,7 +439,7 @@ const createTask = async () => {
       startTime: taskForm.evaluationTime[0],
       endTime: taskForm.evaluationTime[1],
       publisherId: userStore.userId, // 添加发布者ID
-      publisherLevel: 'SCHOOL' // 校级管理员
+      publisherLevel: userStore.userInfo?.role
     }
     delete taskData.evaluationTime
     
@@ -633,6 +644,11 @@ onMounted(() => {
 .card-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
   align-items: center;
 }
 
