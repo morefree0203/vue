@@ -20,6 +20,7 @@ const getApiBaseUrl = (role) => {
 
 // 获取课程列表（根据管理员级别）
 export const getCoursesByAdminLevel = (params, userInfo) => {
+  console.log(params, userInfo)
   const baseUrl = getApiBaseUrl(userInfo?.role)
   return request.get(`${baseUrl}/evaluation/courses`, { params })
 }

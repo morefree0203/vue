@@ -5,11 +5,27 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>管理员权限管理</span>
+          <div class="header-left">
+            <span>管理员权限管理</span>
+            <el-tag type="info" style="margin-left: 10px;">
+              当前权限：{{ getCurrentAdminLevelText() }}
+            </el-tag>
+          </div>
           <!-- 打开分配管理员权限对话框按钮 -->
-          <el-button type="primary" @click="showAssignDialog">分配管理员权限</el-button>
+          <el-button type="primary" @click="showAssignDialog" :disabled="!canAssignAdmin">分配管理员权限</el-button>
         </div>
       </template>
+
+      <!-- 权限说明 -->
+      <div class="permission-info">
+        <el-alert
+          :title="getPermissionInfoTitle()"
+          :description="getPermissionInfoDescription()"
+          type="info"
+          :closable="false"
+          show-icon
+        />
+      </div>
 
       <!-- 搜索区域：按姓名和管理员级别筛选管理员 -->
       <div class="search-area">
@@ -55,8 +71,8 @@
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
             <!-- 编辑和撤销权限按钮 -->
-            <el-button type="primary" size="small" @click="showEditDialog(row)">编辑权限</el-button>
-            <el-button type="warning" size="small" @click="handleRevoke(row)">撤销权限</el-button>
+            <el-button type="primary" size="small" @click="showEditDialog(row)" :disabled="!canEditAdmin(row)">编辑权限</el-button>
+            <el-button type="warning" size="small" @click="handleRevoke(row)" :disabled="!canRevokeAdmin(row)">撤销权限</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -142,10 +158,7 @@
           <el-form :model="assignForm" :rules="assignRules" ref="assignFormRef" label-width="120px">
             <el-form-item label="管理员级别" prop="adminLevel">
               <el-select v-model="assignForm.adminLevel" placeholder="请选择管理员级别" @change="handleAssignLevelChange" style="width: 100%;">
-                <el-option label="系统运维管理员" value="system_admin" />
-                <el-option label="校级管理员" value="school_admin" />
-                <el-option label="院级管理员" value="college_admin" />
-                <el-option label="系级管理员" value="department_admin" />
+                <el-option v-for="level in getAssignableAdminLevels()" :key="level.value" :label="level.label" :value="level.value" />
               </el-select>
             </el-form-item>
             <!-- 院级管理员需要选择学院 -->
@@ -213,10 +226,7 @@
         </el-form-item>
         <el-form-item label="管理员级别" prop="adminLevel">
           <el-select v-model="editForm.adminLevel" placeholder="请选择管理员级别" @change="handleEditLevelChange" style="width: 100%;">
-            <el-option label="系统运维管理员" value="system_admin" />
-            <el-option label="校级管理员" value="school_admin" />
-            <el-option label="院级管理员" value="college_admin" />
-            <el-option label="系级管理员" value="department_admin" />
+            <el-option v-for="level in getAssignableAdminLevels()" :key="level.value" :label="level.label" :value="level.value" />
           </el-select>
           <div style="font-size: 12px; color: #909399; margin-top: 5px;">
             注意：高级管理员包含低级管理员的所有权限，可以修改级别和状态
@@ -271,9 +281,89 @@
 
 <script setup>
 // 引入Vue响应式API和Element Plus组件
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getAdminList, getUsersByRole, assignAdminRole, updateAdmin, revokeAdminRole, getCollegeList, getDepartmentList } from '@/api/admin'
+import { useUserStore } from '@/stores/user'
+
+// ========== 用户Store ==========
+const userStore = useUserStore()
+
+// ========== 计算属性 ==========
+// 检查当前用户是否可以分配管理员权限
+const canAssignAdmin = computed(() => {
+  const currentLevel = getCurrentAdminLevel()
+  return ['system_admin', 'school_admin', 'college_admin'].includes(currentLevel)
+})
+
+// ========== 权限控制相关方法 ==========
+// 获取当前用户的管理员级别
+const getCurrentAdminLevel = () => {
+  return userStore.userInfo?.role || ''
+}
+
+// 检查是否有权限操作指定级别的管理员
+const canOperateAdminLevel = (targetLevel) => {
+  const currentLevel = getCurrentAdminLevel()
+  
+  // 系统管理员可以操作所有级别
+  if (currentLevel === 'system_admin') {
+    return true
+  }
+  
+  // 校级管理员不能操作系统管理员和校级管理员
+  if (currentLevel === 'school_admin') {
+    return targetLevel !== 'system_admin' && targetLevel !== 'school_admin'
+  }
+  
+  // 院级管理员只能操作系级管理员
+  if (currentLevel === 'college_admin') {
+    return targetLevel === 'department_admin'
+  }
+  
+  // 系级管理员不能操作任何管理员
+  if (currentLevel === 'department_admin') {
+    return false
+  }
+  
+  return false
+}
+
+// 获取当前用户可以分配的管理员级别选项
+const getAssignableAdminLevels = () => {
+  const currentLevel = getCurrentAdminLevel()
+  
+  const allLevels = [
+    { label: '系统运维管理员', value: 'system_admin' },
+    { label: '校级管理员', value: 'school_admin' },
+    { label: '院级管理员', value: 'college_admin' },
+    { label: '系级管理员', value: 'department_admin' }
+  ]
+  
+  if (currentLevel === 'system_admin') {
+    return allLevels
+  }
+  
+  if (currentLevel === 'school_admin') {
+    return allLevels.filter(level => level.value !== 'system_admin' && level.value !== 'school_admin')
+  }
+  
+  if (currentLevel === 'college_admin') {
+    return allLevels.filter(level => level.value === 'department_admin')
+  }
+  
+  return []
+}
+
+// 检查是否可以编辑指定管理员
+const canEditAdmin = (admin) => {
+  return canOperateAdminLevel(admin.adminLevel)
+}
+
+// 检查是否可以撤销指定管理员权限
+const canRevokeAdmin = (admin) => {
+  return canOperateAdminLevel(admin.adminLevel)
+}
 
 // ========== 响应式数据定义 ==========
 const loading = ref(false) // 管理员列表加载状态
@@ -504,6 +594,12 @@ const handleAssign = async () => {
     return
   }
   
+  // 检查是否有权限分配指定的管理员级别
+  if (!canOperateAdminLevel(assignForm.adminLevel)) {
+    ElMessage.warning('您没有权限分配该管理员级别')
+    return
+  }
+  
   await assignFormRef.value.validate()
   try {
     const res = await assignAdminRole({
@@ -532,6 +628,12 @@ const handleAssign = async () => {
 
 // ========== 编辑权限相关方法 ==========
 const showEditDialog = async (row) => {
+  // 检查是否有权限编辑该管理员
+  if (!canEditAdmin(row)) {
+    ElMessage.warning('您没有权限编辑该管理员')
+    return
+  }
+  
   Object.assign(editForm, row)
   editDialogVisible.value = true
   
@@ -543,6 +645,12 @@ const showEditDialog = async (row) => {
 
 const handleEditSubmit = async () => {
   await editFormRef.value.validate()
+  
+  // 检查是否有权限修改为指定的管理员级别
+  if (!canOperateAdminLevel(editForm.adminLevel)) {
+    ElMessage.warning('您没有权限将该用户设置为该管理员级别')
+    return
+  }
   
   // 如果修改了管理员级别，需要确认
   const originalAdmin = adminList.value.find(admin => admin.adminId === editForm.adminId)
@@ -593,10 +701,16 @@ const handleEditSubmit = async () => {
 
 // ========== 撤销权限 ==========
 const handleRevoke = async (row) => {
+  // 检查是否有权限撤销该管理员
+  if (!canRevokeAdmin(row)) {
+    ElMessage.warning('您没有权限撤销该管理员')
+    return
+  }
+  
   try {
     // ElMessageBox.confirm 会正常执行后面的代码。
     // 如果没有抛出异常，代码会继续执行 await revokeAdminRole(row.adminId)。
-    // 用户点击“取消”：
+    // 用户点击"取消"：
     // ElMessageBox.confirm 会抛出一个错误，错误对象的值为 'cancel'。
     // 代码会进入 catch 块中
     await ElMessageBox.confirm(`确定要撤销 ${row.name} 的管理员权限吗？`, '提示', { type: 'warning' })
@@ -615,6 +729,37 @@ const handleRevoke = async (row) => {
 }
 
 // ========== 工具方法 ==========
+// 获取当前用户的管理员级别显示文本
+const getCurrentAdminLevelText = () => {
+  const currentLevel = getCurrentAdminLevel()
+  return getAdminLevelText(currentLevel)
+}
+
+// 获取权限信息标题
+const getPermissionInfoTitle = () => {
+  const currentLevel = getCurrentAdminLevel()
+  const levelText = getAdminLevelText(currentLevel)
+  return `权限说明 - ${levelText}`
+}
+
+// 获取权限信息描述
+const getPermissionInfoDescription = () => {
+  const currentLevel = getCurrentAdminLevel()
+  
+  switch (currentLevel) {
+    case 'system_admin':
+      return '您可以管理所有级别的管理员，包括分配、编辑和撤销权限。'
+    case 'school_admin':
+      return '您可以管理院级管理员和系级管理员，不能管理系统管理员和校级管理员。'
+    case 'college_admin':
+      return '您只能管理系级管理员，不能管理其他级别的管理员。'
+    case 'department_admin':
+      return '您没有管理员权限管理功能。'
+    default:
+      return '您没有管理员权限管理功能。'
+  }
+}
+
 const getAdminLevelText = (level) => {
   const levelMap = {
     'system_admin': '系统运维管理员',
@@ -797,6 +942,13 @@ const handleEditDialogClose = () => {
 
 // ========== 页面初始化 ==========
 onMounted(() => {
+  // 检查当前用户是否有管理员权限管理功能
+  const currentLevel = getCurrentAdminLevel()
+  if (currentLevel === 'department_admin' || !['system_admin', 'school_admin', 'college_admin'].includes(currentLevel)) {
+    ElMessage.warning('您没有管理员权限管理功能')
+    return
+  }
+  
   loadData()
   loadCollegeList()
 })
@@ -808,6 +960,10 @@ onMounted(() => {
 
 /* 卡片头部样式 */
 .card-header { display: flex; justify-content: space-between; align-items: center; }
+.header-left { display: flex; align-items: center; }
+
+/* 权限信息样式 */
+.permission-info { margin-bottom: 20px; }
 
 /* 搜索区域样式 */
 .search-area { margin-bottom: 20px; padding: 20px; background-color: #f5f7fa; border-radius: 4px; }
