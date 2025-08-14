@@ -85,6 +85,49 @@ const menus = [
     roles: ['student', 'teacher', 'supervisor', 'leader', 'enterprise', 'school_admin', 'college_admin', 'department_admin', 'system_admin']
   },
 
+
+  {
+    path: '/course',
+    title: '课程管理',
+    icon: Document,
+    roles: ['student', 'teacher'],
+    children: [
+      // {
+      //   path: '/course/list',
+      //   title: '课程列表',
+      //   icon: List,
+      //   roles: ['student', 'teacher', 'supervisor', 'leader', 'enterprise', 'school_admin', 'college_admin', 'department_admin']
+      // },
+      {
+        path: '/course/my-courses',
+        title: '我的课程',
+        icon: Document,
+        roles: ['student', 'teacher']
+      },
+      // 校级管理员功能
+      // {
+      //   path: '/course/info',
+      //   title: '课程信息管理',
+      //   icon: Edit,
+      //   roles: ['school_admin']
+      // },
+      // // 院级管理员功能
+      // {
+      //   path: '/course/college',
+      //   title: '院系课程管理',
+      //   icon: Edit,
+      //   roles: ['college_admin']
+      // },
+      // // 系级管理员功能
+      // {
+      //   path: '/course/department',
+      //   title: '专业课程管理',
+      //   icon: Edit,
+      //   roles: ['department_admin']
+      // }
+    ]
+  },
+
   {
     path: '/evaluation',
     title: '教学评价',
@@ -109,6 +152,7 @@ const menus = [
         icon: ChatDotRound,
         roles: ['teacher']
       },
+
       {
         path: '/evaluation/Supervisor-leader',
         title: '督导评价',
@@ -127,7 +171,6 @@ const menus = [
         icon: View,
         roles: ['enterprise']
       },
-      // 管理员评价管理功能
       {
         path: '/evaluation/manage',
         title: '评价管理',
@@ -138,7 +181,7 @@ const menus = [
         path: '/evaluation/indicators',
         title: '评价指标管理',
         icon: Setting,
-        roles: ['school_admin'] // 只有校级管理员可以管理评价指标
+        roles: ['school_admin']
       },
       {
         path: '/evaluation/task-management',
@@ -146,6 +189,7 @@ const menus = [
         icon: Document,
         roles: ['school_admin', 'college_admin', 'department_admin']
       },
+      // 在 menus 数组中添加
       {
         path: '/evaluation/view-evaluations',
         title: '查看评价',
@@ -167,90 +211,88 @@ const menus = [
     path: '/organization',
     title: '组织管理',
     icon: OfficeBuilding,
-    roles: ['school_admin', 'college_admin', 'department_admin'],
+    roles: ['school_admin', 'college_admin', 'department_admin'], // 三类管理员都可见
     children: [
       {
         path: '/organization/college',
         title: '学院管理',
         icon: OfficeBuilding,
-        roles: ['school_admin'] // 只有校级管理员可以管理学院
+        roles: ['school_admin'] // 校级管理员
       },
       {
         path: '/organization/department',
         title: '系管理',
         icon: OfficeBuilding,
-        roles: ['school_admin', 'college_admin'] // 校级、院级管理员可以管理系
+        roles: ['school_admin', 'college_admin'] // 两类管理员
       },
+     
       {
         path: '/organization/class',
         title: '班级管理',
         icon: OfficeBuilding,
-        roles: ['school_admin', 'college_admin', 'department_admin'] // 三类管理员都可以管理班级
+        roles: ['school_admin', 'college_admin', 'department_admin'] // 三类管理员
       }
     ]
   },
-  {
-    path: '/statistics',
-    title: '统计分析',
-    icon: DataAnalysis,
-    roles: ['school_admin', 'college_admin', 'department_admin'],
-    children: [
-      {
-        path: '/statistics/evaluation',
-        title: '评价统计',
-        icon: DataAnalysis,
-        roles: ['teacher', 'school_admin', 'college_admin', 'department_admin']
-      },
-      {
-        path: '/statistics/course',
-        title: '课程统计',
-        icon: DataAnalysis,
-        roles: ['school_admin', 'college_admin', 'department_admin']
-      },
-      {
-        path: '/statistics/user',
-        title: '用户统计',
-        icon: DataAnalysis,
-        roles: ['school_admin', 'college_admin', 'department_admin']
-      }
-    ]
-  },
+  // {
+  //   path: '/statistics',
+  //   title: '统计分析',
+  //   icon: DataAnalysis,
+  //   // roles: ['teacher', 'school_admin', 'college_admin', 'department_admin'],
+  //   roles: [ 'school_admin', 'college_admin', 'department_admin'],
+  //   children: [
+  //     {
+  //       path: '/statistics/evaluation',
+  //       title: '评价统计',
+  //       icon: DataAnalysis,
+  //       roles: ['teacher', 'school_admin', 'college_admin', 'department_admin']
+  //     },
+  //     {
+  //       path: '/statistics/course',
+  //       title: '课程统计',
+  //       icon: DataAnalysis,
+  //       roles: ['school_admin', 'college_admin', 'department_admin']
+  //     },
+  //     {
+  //       path: '/statistics/user',
+  //       title: '用户统计',
+  //       icon: DataAnalysis,
+  //       roles: ['school_admin', 'college_admin', 'department_admin']
+  //     }
+  //   ]
+  // },
   {
     path: '/admin',
     title: '系统管理',
     icon: Setting,
     roles: ['school_admin', 'college_admin', 'department_admin', 'system_admin'],
     children: [
-      {
-        path: '/admin/user',
-        title: '用户管理',
-        icon: User,
-        roles: ['school_admin', 'college_admin', 'department_admin']
-      },
+      // {
+      //   path: '/admin/user',
+      //   title: '用户管理',
+      //   icon: User,
+      //   roles: ['school_admin', 'college_admin', 'department_admin']
+      // },
+      // 哪个角色可以做什么
       {
         path: '/admin/role',
         title: '角色权限管理',
         icon: Setting,
-        roles: ['system_admin']
+        roles: ['system_admin','school_admin', 'college_admin', 'department_admin']
       },
-      {
-        path: '/admin/permission',
-        title: '权限分配',
-        icon: Setting,
-        roles: ['school_admin', 'college_admin', 'department_admin']
-      },
-      {
-        path: '/admin/system',
-        title: '系统设置',
-        icon: Setting,
-        roles: ['school_admin', 'college_admin', 'department_admin']
-      },
-      {
-        path: '/admin/evaluation-maintenance',
-        title: '评价维护',
-        icon: Comment,
-        roles: ['school_admin', 'college_admin', 'department_admin']
-      }
+      // {
+      //   path: '/admin/permission',
+      //   title: '权限分配',
+      //   icon: Setting,
+      //   roles: ['school_admin', 'college_admin', 'department_admin']
+      // },
+      // 评教时间段、匿名设置 系统公告
+      // {
+      //   path: '/admin/system',
+      //   title: '系统设置',
+      //   icon: Setting,
+      //   roles: ['system_admin']
+      // }
     ]
   }
 ]

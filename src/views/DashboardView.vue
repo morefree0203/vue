@@ -1,3 +1,4 @@
+<!-- 系统首页 -->
 <template>
   <div class="dashboard">
     <!-- 欢迎区域 -->

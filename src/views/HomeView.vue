@@ -1,5 +1,4 @@
-
-
+<!-- 模块分布主页 -->
 <template>
     <el-container class="container">
       <!-- 侧边栏 -->

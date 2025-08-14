@@ -1,3 +1,4 @@
+<!-- 领导评价页面 -->
 <template>
   <div class="leader-evaluation">
     <el-table :data="courseList" style="width: 100%">

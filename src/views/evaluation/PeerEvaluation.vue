@@ -1,3 +1,4 @@
+<!-- 同行评价页面 -->
 <template>
   <div class="peer-evaluation">
     <div class="page-title">可旁听课程列表</div>

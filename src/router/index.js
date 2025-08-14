@@ -24,6 +24,49 @@ const routes = [
         name: 'Dashboard',
         component: () => import('@/views/DashboardView.vue')
       },
+      // 课程管理
+      {
+        path: '/course/list',
+        name: 'CourseList',
+        component: () => import('@/views/course/CourseListView.vue')
+      },
+      // 通用查看我的课程接口 不同角色的数据获取在内部判断
+      {
+        path: '/course/my-courses',
+        name: 'MyCourses',
+        component: () => import('@/views/course/MyCoursesView.vue')
+      },
+      // 老师查看自己的课程评价详情的接口
+      {
+        path: '/course/evaluation/:assignmentId',
+        name: 'CourseEvaluationDetail',
+        component: () => import('@/views/course/CourseEvaluationDetail.vue')
+      },
+      {
+        path: '/course/info',
+        name: 'CourseInfoManagement',
+        component: () => import('@/views/course/CourseInfoManagement.vue')
+      },
+      // {
+      //   path: '/course/teacher-assignment',
+      //   name: 'TeacherAssignmentManagement',
+      //   component: () => import('@/views/course/TeacherAssignmentManagement.vue')
+      // },
+      // {
+      //   path: '/course/student-selection',
+      //   name: 'StudentSelectionManagement',
+      //   component: () => import('@/views/course/StudentSelectionManagement.vue')
+      // },
+      {
+        path: '/course/college',
+        name: 'CollegeCourseManagement',
+        component: () => import('@/views/course/CollegeCourseManagement.vue')
+      },
+      {
+        path: '/course/department',
+        name: 'DepartmentCourseManagement',
+        component: () => import('@/views/course/DepartmentCourseManagement.vue')
+      },
       // 教学评价
       {
         path: '/evaluation/student-tasks',
@@ -78,11 +121,6 @@ const routes = [
         component: () => import('@/views/evaluation/EvaluationManageView.vue')
       },
       {
-        path: '/evaluation/enterprise-manage',
-        name: 'EnterpriseEvaluationManagement',
-        component: () => import('@/views/evaluation/EnterpriseEvaluationManageView.vue')
-      },
-      {
         path: '/evaluation/indicators',
         name: 'EvaluationIndicators',
         component: () => import('@/views/evaluation/EvaluationIndicatorsView.vue')
@@ -91,6 +129,11 @@ const routes = [
         path: '/evaluation/task-management',
         name: 'EvaluationTaskManagement',
         component: () => import('@/views/evaluation/EvaluationTaskManagement.vue')
+      },
+      {
+        path: '/evaluation/enterprise-manage',
+        name: 'EnterpriseEvaluationManagement',
+        component: () => import('@/views/evaluation/EnterpriseEvaluationManageView.vue')
       },
       // 组织管理
       {
@@ -125,11 +168,11 @@ const routes = [
         component: () => import('@/views/dashboard/StatisticsView.vue')
       },
       // 系统管理
-      {
-        path: '/admin/user',
-        name: 'UserManagement',
-        component: () => import('@/views/admin/UserManagementView.vue')
-      },
+      // {
+      //   path: '/admin/user',
+      //   name: 'UserManagement',
+      //   component: () => import('@/views/admin/ManagementView.vue')
+      // },
       {
         path: '/admin/role',
         name: 'RolePermissionManagement',

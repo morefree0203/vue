@@ -1,3 +1,4 @@
+<!-- 管理员通过权限查看可管理评价的课程 -->
 <template>
   <div class="evaluation-manage-view">
     <div class="page-header">

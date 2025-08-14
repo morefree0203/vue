@@ -1,3 +1,4 @@
+<!-- 学生查看评价后的详情页 -->
 <template>
     <div class="student-evaluation">
       <el-card class="evaluation-card">
@@ -71,7 +72,7 @@
   <script setup>
   import { ref, onMounted } from 'vue'
   import { useRoute } from 'vue-router'
-  import { getStudentEvaluationDetail } from '@/api/student' // 你需要实现这个API
+  import { getStudentEvaluationDetail } from '@/api/student' 
   
   const route = useRoute()
   const assignmentId = route.params.assignmentId
@@ -99,7 +100,7 @@
   </script>
   
   <style scoped>
-  /* 可复用你原有的样式 */
+
   .student-evaluation {
     width: 100%;
     min-height: 100%;

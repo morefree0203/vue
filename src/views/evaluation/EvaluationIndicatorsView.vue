@@ -1,3 +1,4 @@
+<!-- 学生评价指标页面 -->
 <template>
   <div class="evaluation-indicators">
     <el-card>

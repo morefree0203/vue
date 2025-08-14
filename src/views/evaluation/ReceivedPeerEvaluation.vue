@@ -1,3 +1,4 @@
+<!-- 查看收到得同行评价页面 -->
 <template>
   <div class="received-evaluation-page">
     <div class="page-title">收到的同行评价</div>
