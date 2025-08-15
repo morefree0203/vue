@@ -124,6 +124,7 @@ const searchEvaluations = async () => {
     } else if (role === 'department_admin') {
       // 系级管理员：查询本系课程
       params.role = 'department_admin'
+      params.collegeId = userStore.userInfo?.collegeId
       params.departmentId = userStore.userInfo?.departmentId
     }
     

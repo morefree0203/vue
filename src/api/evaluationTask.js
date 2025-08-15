@@ -49,11 +49,16 @@ export function deleteEvaluationTask(taskId) {
 }
 
 // 获取可分配的学生列表
-export function getAvailableStudents(params) {
+export function getAvailableStudents(params, userInfo) {
   return request({
     url: '/api/school-admin/evaluation-tasks/available-students',
     method: 'get',
-    params
+    params: {
+      ...params,
+      userRole: userInfo?.role,
+      userCollegeId: userInfo?.collegeId,
+      userDepartmentId: userInfo?.departmentId
+    }
   })
 }
 

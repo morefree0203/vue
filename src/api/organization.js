@@ -53,8 +53,14 @@ export function getAllDepartmentList(params, userInfo) {
 }
 
 // 根据学院ID获取系列表
-export function getDepartmentList(collegeId, params) {
-  return request.get(`/api/organization/department/list/${collegeId}`, { params })
+export function getDepartmentList(collegeId, userInfo) {
+  return request.get(`/api/organization/department/list/${collegeId}`, { 
+    params: {
+      userRole: userInfo?.role,
+      userCollegeId: userInfo?.collegeId,
+      userDepartmentId: userInfo?.departmentId
+    }
+  })
 }
 
 // 添加系部
@@ -82,8 +88,15 @@ export function updateDepartmentStatus(departmentId, status) {
 // ==================== 班级管理 ====================
 
 // 获取所有班级列表
-export function getAllClassList(params) {
-  return request.get('/api/organization/class/list', { params })
+export function getAllClassList(params, userInfo) {
+  return request.get('/api/organization/class/list', { 
+    params: {
+      ...params,
+      userRole: userInfo?.role,
+      userCollegeId: userInfo?.collegeId,
+      userDepartmentId: userInfo?.departmentId
+    }
+  })
 }
 
 // 根据系ID获取班级列表

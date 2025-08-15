@@ -167,7 +167,7 @@
                 <el-option 
                   v-for="college in collegeList" 
                   :key="college.collegeId" 
-                  :label="college.name" 
+                  :label="college.collegeName" 
                   :value="college.collegeId" 
                 />
               </el-select>
@@ -178,7 +178,7 @@
                 <el-option 
                   v-for="college in collegeList" 
                   :key="college.collegeId" 
-                  :label="college.name" 
+                  :label="college.collegeName" 
                   :value="college.collegeId" 
                 />
               </el-select>
@@ -188,7 +188,7 @@
                 <el-option 
                   v-for="department in departmentList" 
                   :key="department.departmentId" 
-                  :label="department.name" 
+                  :label="department.departmentName" 
                   :value="department.departmentId" 
                 />
               </el-select>
@@ -238,7 +238,7 @@
             <el-option 
               v-for="college in collegeList" 
               :key="college.collegeId" 
-              :label="college.name" 
+              :label="college.collegeName" 
               :value="college.collegeId" 
             />
           </el-select>
@@ -249,7 +249,7 @@
             <el-option 
               v-for="college in collegeList" 
               :key="college.collegeId" 
-              :label="college.name" 
+              :label="college.collegeName" 
               :value="college.collegeId" 
             />
           </el-select>
@@ -259,7 +259,7 @@
             <el-option 
               v-for="department in departmentList" 
               :key="department.departmentId" 
-              :label="department.name" 
+              :label="department.departmentName" 
               :value="department.departmentId" 
             />
           </el-select>
@@ -283,7 +283,8 @@
 // 引入Vue响应式API和Element Plus组件
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getAdminList, getUsersByRole, assignAdminRole, updateAdmin, revokeAdminRole, getCollegeList, getDepartmentList } from '@/api/admin'
+import { getAdminList, getUsersByRole, assignAdminRole, updateAdmin, revokeAdminRole } from '@/api/admin'
+import { getCollegeList, getAllDepartmentList, getDepartmentList } from '@/api/organization'
 import { useUserStore } from '@/stores/user'
 
 // ========== 用户Store ==========
@@ -820,9 +821,9 @@ const getRoleList = (roleString) => {
 // ========== 学院/系数据加载 ==========
 const loadCollegeList = async () => {
   try {
-    const res = await getCollegeList()
+    const res = await getCollegeList({}, userStore.userInfo)
     if (res.code === '200') {
-      collegeList.value = res.data || []
+      collegeList.value = res.data.colleges || []
     }
   } catch (error) {
     console.error('获取学院列表失败:', error)
@@ -836,9 +837,9 @@ const loadDepartmentList = async (collegeId) => {
     return
   }
   try {
-    const res = await getDepartmentList(collegeId)
+    const res = await getDepartmentList(collegeId, userStore.userInfo)
     if (res.code === '200') {
-      departmentList.value = res.data || []
+      departmentList.value = res.data.departments || []
     }
   } catch (error) {
     console.error('获取系列表失败:', error)

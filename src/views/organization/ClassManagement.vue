@@ -97,6 +97,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { useUserStore } from '@/stores/user'
 import {
   getCollegeList,
   getAllDepartmentList,
@@ -105,6 +106,8 @@ import {
   updateClass,
   deleteClass
 } from '@/api/organization'
+
+const userStore = useUserStore()
 
 // 响应式数据
 const loading = ref(false)
@@ -164,7 +167,7 @@ const loadClassList = async () => {
       grade: searchForm.grade
     }
 
-    const response = await getAllClassList(params)
+    const response = await getAllClassList(params, userStore.userInfo)
     if (response.code === '200') {
       classList.value = response.data.classes || []
       pagination.total = response.data.total || 0
@@ -181,11 +184,23 @@ const loadClassList = async () => {
 // 加载系列表
 const loadDepartmentList = async () => {
   try {
-    const response = await getAllDepartmentList({})
-    if (response.code === '200') {
-      departmentList.value = response.data.departments || []
+    // 如果是系级管理员，只加载自己管理的系
+    if (userStore.userInfo?.role === 'department_admin') {
+      // 系级管理员只能看到自己管理的系
+      const response = await getAllDepartmentList({}, userStore.userInfo)
+      if (response.code === '200') {
+        departmentList.value = response.data.departments || []
+      } else {
+        ElMessage.error(response.msg || response.message || '加载系列表失败')
+      }
     } else {
-      ElMessage.error(response.msg || response.message || '加载系列表失败')
+      // 校级和院级管理员可以看到所有系或本院系
+      const response = await getAllDepartmentList({}, userStore.userInfo)
+      if (response.code === '200') {
+        departmentList.value = response.data.departments || []
+      } else {
+        ElMessage.error(response.msg || response.message || '加载系列表失败')
+      }
     }
   } catch (error) {
     ElMessage.error('加载系列表失败')
@@ -195,7 +210,7 @@ const loadDepartmentList = async () => {
 // 加载学院列表
 const loadCollegeList = async () => {
   try {
-    const response = await getCollegeList({})
+    const response = await getCollegeList({}, userStore.userInfo)
     if (response.code === '200') {
       collegeList.value = response.data.colleges || []
     } else {

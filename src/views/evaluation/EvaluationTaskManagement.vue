@@ -175,9 +175,32 @@
           </div>
           
           <div class="filter-section" style="margin: 20px 0;">
+            <!-- 权限提示 -->
+            <div v-if="userStore.userInfo?.role === 'department_admin'" style="margin-bottom: 10px;">
+              <el-alert 
+                title="权限提示：系级管理员只能分配自己系的学生" 
+                type="info" 
+                :closable="false"
+                show-icon
+              />
+            </div>
+            <div v-else-if="userStore.userInfo?.role === 'college_admin'" style="margin-bottom: 10px;">
+              <el-alert 
+                title="权限提示：院级管理员只能分配自己院的学生" 
+                type="info" 
+                :closable="false"
+                show-icon
+              />
+            </div>
             <el-row :gutter="20">
               <el-col :span="8">
-                <el-select v-model="studentFilter.collegeId" placeholder="选择学院" clearable @change="handleStudentFilterCollegeChange">
+                <el-select 
+                  v-model="studentFilter.collegeId" 
+                  placeholder="选择学院" 
+                  clearable 
+                  @change="handleStudentFilterCollegeChange"
+                  :disabled="userStore.userInfo?.role === 'department_admin'"
+                >
                   <el-option 
                     v-for="college in collegeList" 
                     :key="college.id" 
@@ -187,7 +210,13 @@
                 </el-select>
               </el-col>
               <el-col :span="8">
-                <el-select v-model="studentFilter.departmentId" placeholder="选择系" clearable @change="fetchAvailableStudents">
+                <el-select 
+                  v-model="studentFilter.departmentId" 
+                  placeholder="选择系" 
+                  clearable 
+                  @change="fetchAvailableStudents"
+                  :disabled="userStore.userInfo?.role === 'college_admin' || userStore.userInfo?.role === 'department_admin'"
+                >
                   <el-option 
                     v-for="dept in departmentList" 
                     :key="dept.id" 
@@ -353,6 +382,15 @@ const fetchColleges = async () => {
     const res = await getCollegeList(userStore.userInfo)
     if (res.code === '200') {
       collegeList.value = res.data
+      
+      // 如果是系级管理员，禁用学院选择
+      if (userStore.userInfo?.role === 'department_admin') {
+        // 系级管理员只能看到自己所在的学院
+        const userCollege = collegeList.value.find(college => college.id == userStore.userInfo?.collegeId)
+        if (userCollege) {
+          studentFilter.collegeId = userCollege.id
+        }
+      }
     } else {
       ElMessage.error(res.message || '获取学院列表失败')
     }
@@ -400,6 +438,11 @@ const handleStudentFilterCollegeChange = async (collegeId) => {
   if (collegeId) {
     // 获取该学院的系列表
     await fetchDepartments(collegeId)
+    
+    // 如果是系级管理员，自动设置系
+    if (userStore.userInfo?.role === 'department_admin' && userStore.userInfo?.departmentId) {
+      studentFilter.departmentId = userStore.userInfo.departmentId
+    }
   }
   
   // 重新获取可分配的学生列表
@@ -519,6 +562,16 @@ const showAssignDialog = async (task) => {
   // 清空系列表
   departmentList.value = []
   
+  // 根据管理员角色设置权限限制
+  if (userStore.userInfo?.role === 'department_admin') {
+    // 系级管理员只能分配自己系的学生
+    studentFilter.collegeId = userStore.userInfo.collegeId
+    studentFilter.departmentId = userStore.userInfo.departmentId
+  } else if (userStore.userInfo?.role === 'college_admin') {
+    // 院级管理员只能分配自己院的学生
+    studentFilter.collegeId = userStore.userInfo.collegeId
+  }
+  
   // 获取可分配的学生列表
   await fetchAvailableStudents()
 }
@@ -534,7 +587,7 @@ const fetchAvailableStudents = async () => {
       ...studentFilter
     }
     
-    const res = await getAvailableStudents(params)
+    const res = await getAvailableStudents(params, userStore.userInfo)
     if (res.code === '200') {
       availableStudents.value = res.data || []
     } else {
