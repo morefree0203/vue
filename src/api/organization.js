@@ -31,12 +31,6 @@ export function deleteCollege(collegeId) {
   return request.delete(`/api/organization/college/delete/${collegeId}`)
 }
 
-// 更新学院状态
-export function updateCollegeStatus(collegeId, status) {
-  return request.put(`/api/organization/college/status/${collegeId}`, null, {
-    params: { status }
-  })
-}
 
 // ==================== 系部管理 ====================
 
@@ -78,16 +72,11 @@ export function deleteDepartment(departmentId) {
   return request.delete(`/api/organization/department/delete/${departmentId}`)
 }
 
-// 更新系部状态
-export function updateDepartmentStatus(departmentId, status) {
-  return request.put(`/api/organization/department/status/${departmentId}`, null, {
-    params: { status }
-  })
-}
+
 
 // ==================== 班级管理 ====================
 
-// 获取所有班级列表
+// 获取班级列表
 export function getAllClassList(params, userInfo) {
   return request.get('/api/organization/class/list', { 
     params: {
@@ -99,10 +88,7 @@ export function getAllClassList(params, userInfo) {
   })
 }
 
-// 根据系ID获取班级列表
-export function getClassList(departmentId, params) {
-  return request.get(`/api/organization/class/list/${departmentId}`, { params })
-}
+
 
 // 添加班级
 export function addClass(data) {

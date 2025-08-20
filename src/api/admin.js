@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 获取管理员列表
+// 获取管理员列表 根据分页参数和搜索参数
 export function getAdminList(params) {
   // 确保分页参数正确
   const requestParams = {
@@ -11,17 +11,13 @@ export function getAdminList(params) {
   return request.get('/admin/list', { params: requestParams })
 }
 
-// 获取管理员详情
-export function getAdminDetail(adminId) {
-  return request.get(`/admin/detail/${adminId}`)
-}
 
-// 获取可分配管理员权限的用户列表
+// 获取可分配管理员权限的用户列表 
 export function getUsersByRole(params) {
   return request.get('/admin/users', { params })
 }
 
-// 分配管理员权限
+// 分配管理员权限 根据管理员ID和角色ID
 export function assignAdminRole(data) {
   return request.post('/admin/assign', data)
 }
@@ -36,15 +32,6 @@ export function revokeAdminRole(adminId) {
   return request.delete(`/admin/revoke/${adminId}`)
 }
 
-// 更新管理员状态
-export function updateAdminStatus(adminId, status) {
-  return request.put(`/admin/status/${adminId}`, null, { params: { status } })
-}
-
-// 根据级别获取管理员列表
-export function getAdminsByLevel(adminLevel) {
-  return request.get(`/admin/level/${adminLevel}`)
-}
 
 // 获取学院列表
 export function getCollegeList() {
@@ -54,4 +41,20 @@ export function getCollegeList() {
 // 根据学院ID获取系列表
 export function getDepartmentList(collegeId) {
   return request.get(`/admin/departments/${collegeId}`)
+} 
+
+export function getEvaluationIndicators() {
+  return request.get('/admin/evaluation-indicators')
+}
+
+export function addEvaluationIndicator(data) {
+  return request.post('/admin/evaluation-indicators', data)
+}
+
+export function updateEvaluationIndicator(id, data) {
+  return request.put(`/admin/evaluation-indicators/${id}`, data)
+}
+
+export function deleteEvaluationIndicator(id) {
+  return request.delete(`/admin/evaluation-indicators/${id}`)
 } 

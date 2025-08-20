@@ -40,19 +40,19 @@ export function submitPeerEvaluation(data) {
   return request.post('/teacher/submit-peer-evaluation', data)
 }
 
-// 图片上传接口 (示例, 路径需要与后端匹配)
-export function uploadPeerImage(file) {
-    const formData = new FormData();
-    // 创建一个 FormData 对象，这是浏览器提供的表单数据工具。
-    // 把图片文件 file 添加进去，键名是 'file'，后端会通过这个名字获取文件。
-    formData.append('file', file);
-    return request.post('/teacher/peer-image-upload', formData, {
-      // 设置请求头 Content-Type 为 multipart/form-data，告诉服务器这是文件上传请求。
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    });
-}
+// // 图片上传接口 (示例, 路径需要与后端匹配)
+// export function uploadPeerImage(file) {
+//     const formData = new FormData();
+//     // 创建一个 FormData 对象，这是浏览器提供的表单数据工具。
+//     // 把图片文件 file 添加进去，键名是 'file'，后端会通过这个名字获取文件。
+//     formData.append('file', file);
+//     return request.post('/teacher/peer-image-upload', formData, {
+//       // 设置请求头 Content-Type 为 multipart/form-data，告诉服务器这是文件上传请求。
+//         headers: {
+//             'Content-Type': 'multipart/form-data'
+//         }
+//     });
+// }
 
 
 // 获取我被评价的课程列表及评价数

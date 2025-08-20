@@ -92,39 +92,12 @@ const menus = [
     icon: Document,
     roles: ['student', 'teacher'],
     children: [
-      // {
-      //   path: '/course/list',
-      //   title: '课程列表',
-      //   icon: List,
-      //   roles: ['student', 'teacher', 'supervisor', 'leader', 'enterprise', 'school_admin', 'college_admin', 'department_admin']
-      // },
       {
         path: '/course/my-courses',
         title: '我的课程',
         icon: Document,
         roles: ['student', 'teacher']
       },
-      // 校级管理员功能
-      // {
-      //   path: '/course/info',
-      //   title: '课程信息管理',
-      //   icon: Edit,
-      //   roles: ['school_admin']
-      // },
-      // // 院级管理员功能
-      // {
-      //   path: '/course/college',
-      //   title: '院系课程管理',
-      //   icon: Edit,
-      //   roles: ['college_admin']
-      // },
-      // // 系级管理员功能
-      // {
-      //   path: '/course/department',
-      //   title: '专业课程管理',
-      //   icon: Edit,
-      //   roles: ['department_admin']
-      // }
     ]
   },
 
@@ -234,65 +207,18 @@ const menus = [
       }
     ]
   },
-  // {
-  //   path: '/statistics',
-  //   title: '统计分析',
-  //   icon: DataAnalysis,
-  //   // roles: ['teacher', 'school_admin', 'college_admin', 'department_admin'],
-  //   roles: [ 'school_admin', 'college_admin', 'department_admin'],
-  //   children: [
-  //     {
-  //       path: '/statistics/evaluation',
-  //       title: '评价统计',
-  //       icon: DataAnalysis,
-  //       roles: ['teacher', 'school_admin', 'college_admin', 'department_admin']
-  //     },
-  //     {
-  //       path: '/statistics/course',
-  //       title: '课程统计',
-  //       icon: DataAnalysis,
-  //       roles: ['school_admin', 'college_admin', 'department_admin']
-  //     },
-  //     {
-  //       path: '/statistics/user',
-  //       title: '用户统计',
-  //       icon: DataAnalysis,
-  //       roles: ['school_admin', 'college_admin', 'department_admin']
-  //     }
-  //   ]
-  // },
   {
     path: '/admin',
     title: '系统管理',
     icon: Setting,
     roles: ['school_admin', 'college_admin', 'department_admin', 'system_admin'],
     children: [
-      // {
-      //   path: '/admin/user',
-      //   title: '用户管理',
-      //   icon: User,
-      //   roles: ['school_admin', 'college_admin', 'department_admin']
-      // },
-      // 哪个角色可以做什么
       {
         path: '/admin/role',
         title: '角色权限管理',
         icon: Setting,
         roles: ['system_admin','school_admin', 'college_admin', 'department_admin']
       },
-      // {
-      //   path: '/admin/permission',
-      //   title: '权限分配',
-      //   icon: Setting,
-      //   roles: ['school_admin', 'college_admin', 'department_admin']
-      // },
-      // 评教时间段、匿名设置 系统公告
-      // {
-      //   path: '/admin/system',
-      //   title: '系统设置',
-      //   icon: Setting,
-      //   roles: ['system_admin']
-      // }
     ]
   }
 ]

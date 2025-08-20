@@ -25,11 +25,11 @@ const routes = [
         component: () => import('@/views/DashboardView.vue')
       },
       // 课程管理
-      {
-        path: '/course/list',
-        name: 'CourseList',
-        component: () => import('@/views/course/CourseListView.vue')
-      },
+      // {
+      //   path: '/course/list',
+      //   name: 'CourseList',
+      //   component: () => import('@/views/course/CourseListView.vue')
+      // },
       // 通用查看我的课程接口 不同角色的数据获取在内部判断
       {
         path: '/course/my-courses',
@@ -42,11 +42,11 @@ const routes = [
         name: 'CourseEvaluationDetail',
         component: () => import('@/views/course/CourseEvaluationDetail.vue')
       },
-      {
-        path: '/course/info',
-        name: 'CourseInfoManagement',
-        component: () => import('@/views/course/CourseInfoManagement.vue')
-      },
+      // {
+      //   path: '/course/info',
+      //   name: 'CourseInfoManagement',
+      //   component: () => import('@/views/course/CourseInfoManagement.vue')
+      // },
       // {
       //   path: '/course/teacher-assignment',
       //   name: 'TeacherAssignmentManagement',
@@ -57,16 +57,16 @@ const routes = [
       //   name: 'StudentSelectionManagement',
       //   component: () => import('@/views/course/StudentSelectionManagement.vue')
       // },
-      {
-        path: '/course/college',
-        name: 'CollegeCourseManagement',
-        component: () => import('@/views/course/CollegeCourseManagement.vue')
-      },
-      {
-        path: '/course/department',
-        name: 'DepartmentCourseManagement',
-        component: () => import('@/views/course/DepartmentCourseManagement.vue')
-      },
+      // {
+      //   path: '/course/college',
+      //   name: 'CollegeCourseManagement',
+      //   component: () => import('@/views/course/CollegeCourseManagement.vue')
+      // },
+      // {
+      //   path: '/course/department',
+      //   name: 'DepartmentCourseManagement',
+      //   component: () => import('@/views/course/DepartmentCourseManagement.vue')
+      // },
       // 教学评价
       {
         path: '/evaluation/student-tasks',
@@ -151,48 +151,12 @@ const routes = [
         name: 'ClassManagement',
         component: () => import('@/views/organization/ClassManagement.vue')
       },
-      // 统计分析
-      {
-        path: '/statistics/evaluation',
-        name: 'EvaluationStatistics',
-        component: () => import('@/views/dashboard/StatisticsView.vue')
-      },
-      {
-        path: '/statistics/course',
-        name: 'CourseStatistics',
-        component: () => import('@/views/dashboard/StatisticsView.vue')
-      },
-      {
-        path: '/statistics/user',
-        name: 'UserStatistics',
-        component: () => import('@/views/dashboard/StatisticsView.vue')
-      },
-      // 系统管理
-      // {
-      //   path: '/admin/user',
-      //   name: 'UserManagement',
-      //   component: () => import('@/views/admin/ManagementView.vue')
-      // },
+
       {
         path: '/admin/role',
         name: 'RolePermissionManagement',
         component: () => import('@/views/admin/AdminManagement.vue')
       },
-      {
-        path: '/admin/permission',
-        name: 'PermissionAssignment',
-        component: () => import('@/views/admin/PermissionAssignmentView.vue')
-      },
-      {
-        path: '/admin/system',
-        name: 'SystemSettings',
-        component: () => import('@/views/admin/SystemSettingsView.vue')
-      },
-      {
-        path: '/admin/evaluation-maintenance',
-        name: 'EvaluationMaintenance',
-        component: () => import('@/views/admin/EvaluationMaintenanceView.vue')
-      }
     ]
   }
 ]

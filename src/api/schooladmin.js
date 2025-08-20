@@ -51,42 +51,6 @@ export const deleteUser = (userId, role, userInfo) => {
   })
 }
 
-// 取消用户匿名评价权限
-export const revokeAnonymousPermission = (userId, adminId, reason = '', userInfo) => {
-  const baseUrl = getApiBaseUrl(userInfo?.role)
-  return request.post(`${baseUrl}/user/${userId}/revoke-anonymous`, null, { 
-    params: { adminId, reason } 
-  })
-}
-
-// 获取管理员权限范围内的统计信息
-export const getAdminStatistics = (params, userInfo) => {
-  const baseUrl = getApiBaseUrl(userInfo?.role)
-  return request.get(`${baseUrl}/evaluation/statistics`, { params })
-}
-
-// 批量删除评价
-export const batchDeleteEvaluations = (evaluationIds, adminId, reason = '', userInfo) => {
-  const baseUrl = getApiBaseUrl(userInfo?.role)
-  return request.post(`${baseUrl}/evaluation/batch-delete`, { 
-    evaluationIds, adminId, reason 
-  })
-}
-
-// 获取用户操作日志
-export const getUserOperationLogs = (params, userInfo) => {
-  const baseUrl = getApiBaseUrl(userInfo?.role)
-  return request.get(`${baseUrl}/operation-logs`, { params })
-}
-
-// 导出评价数据
-export const exportEvaluationData = (params, userInfo) => {
-  const baseUrl = getApiBaseUrl(userInfo?.role)
-  return request.get(`${baseUrl}/evaluation/export`, { 
-    params,
-    responseType: 'blob'
-  })
-}
 
 // 获取评价图片列表
 export const getEvaluationImages = (evaluationId, evaluationType, userInfo) => {
@@ -96,13 +60,6 @@ export const getEvaluationImages = (evaluationId, evaluationType, userInfo) => {
   })
 }
 
-// 获取评价图片数量
-export const getEvaluationImageCount = (evaluationId, evaluationType, userInfo) => {
-  const baseUrl = getApiBaseUrl(userInfo?.role)
-  return request.get(`${baseUrl}/evaluation/${evaluationId}/images/count`, {
-    params: { evaluationType }
-  })
-}
 
 // ======================= 企业评价相关API =======================
 

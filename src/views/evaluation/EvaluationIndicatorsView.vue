@@ -145,7 +145,7 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getEvaluationIndicators, addEvaluationIndicator, updateEvaluationIndicator, deleteEvaluationIndicator } from '@/api/evaluation'
+import { getEvaluationIndicators, addEvaluationIndicator, updateEvaluationIndicator, deleteEvaluationIndicator } from '@/api/admin'
 
 // 响应式数据
 const activeTab = ref('student')
@@ -280,12 +280,14 @@ const deleteIndicator = async (indicator) => {
       ElMessage.success('指标删除成功')
       loadIndicators()
     } else {
-      ElMessage.error(response.message || '删除失败')
+      // 显示后端返回的错误信息
+      ElMessage.error(response.msg || response.message || '删除失败')
     }
   } catch (error) {
     if (error !== 'cancel') {
       console.error('删除指标失败:', error)
-      ElMessage.error('删除失败')
+      // 如果是网络错误或其他异常，显示通用错误信息
+      ElMessage.error('删除失败，请稍后重试')
     }
   }
 }
@@ -333,5 +335,30 @@ const getCategoryLabel = (category) => {
 
 .tab-content {
   padding: 20px 0;
+}
+</style>
+
+<style>
+/* 全局样式：让错误提示框的文字更大更清晰 */
+.el-message--error {
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+  padding: 12px 16px !important;
+}
+
+.el-message--error .el-message__content {
+  font-size: 16px !important;
+  font-weight: 500 !important;
+}
+
+.el-message--success {
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+  padding: 12px 16px !important;
+}
+
+.el-message--success .el-message__content {
+  font-size: 16px !important;
+  font-weight: 500 !important;
 }
 </style> 

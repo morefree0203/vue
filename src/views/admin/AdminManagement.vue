@@ -309,7 +309,7 @@ const canOperateAdminLevel = (targetLevel) => {
   
   // 系统管理员可以操作所有级别
   if (currentLevel === 'system_admin') {
-    return true
+    return targetLevel !== 'system_admin' // 系统管理员不能操作其他系统管理员
   }
   
   // 校级管理员不能操作系统管理员和校级管理员
@@ -342,7 +342,7 @@ const getAssignableAdminLevels = () => {
   ]
   
   if (currentLevel === 'system_admin') {
-    return allLevels
+    return allLevels.filter(level => level.value !== 'system_admin') // 系统管理员不能分配系统管理员权限
   }
   
   if (currentLevel === 'school_admin') {
@@ -358,11 +358,19 @@ const getAssignableAdminLevels = () => {
 
 // 检查是否可以编辑指定管理员
 const canEditAdmin = (admin) => {
+  // 不能编辑自己
+  if (admin.adminId === userStore.userInfo?.id) {
+    return false
+  }
   return canOperateAdminLevel(admin.adminLevel)
 }
 
 // 检查是否可以撤销指定管理员权限
 const canRevokeAdmin = (admin) => {
+  // 不能撤销自己的权限
+  if (admin.adminId === userStore.userInfo?.id) {
+    return false
+  }
   return canOperateAdminLevel(admin.adminLevel)
 }
 

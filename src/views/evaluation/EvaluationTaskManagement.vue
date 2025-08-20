@@ -266,7 +266,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '@/stores/user'
-import { getEvaluationTasks, createEvaluationTask, updateTaskStatus, deleteEvaluationTask, getTaskAssignments, getCourseList, getCollegeList, getDepartmentList, getAvailableStudents, assignTaskToStudents } from '@/api/evaluationTask'
+import { getEvaluationTasks, createEvaluationTask, deleteEvaluationTask, getTaskAssignments, getCourseList, getCollegeList, getDepartmentList, getAvailableStudents, assignTaskToStudents } from '@/api/evaluationTask'
 
 const userStore = useUserStore()
 const loading = ref(false)

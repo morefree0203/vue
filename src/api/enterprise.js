@@ -12,12 +12,12 @@ export function getEnterpriseEvaluationHistory(enterpriseId) {
   return request.get('/enterprise/my-evaluations', { params: { enterpriseId } })
 }
 
-// 管理员获取所有企业评价
-export function getAllEnterpriseEvaluations(params) {
-  return request.get('/enterprise/all-evaluations', { params })
-}
+// // 管理员获取所有企业评价
+// export function getAllEnterpriseEvaluations(params) {
+//   return request.get('/enterprise/all-evaluations', { params })
+// }
 
-// 管理员获取企业评价详情
-export function getEnterpriseEvaluationDetail(evaluationId) {
-  return request.get('/enterprise/evaluation-detail', { params: { evaluationId } })
-} 
+// // 管理员获取企业评价详情
+// export function getEnterpriseEvaluationDetail(evaluationId) {
+//   return request.get('/enterprise/evaluation-detail', { params: { evaluationId } })
+// } 

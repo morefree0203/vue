@@ -27,16 +27,6 @@ export function createEvaluationTask(data) {
   })
 }
 
-/**
- * 更新任务状态
- */
-export function updateTaskStatus(taskId, status) {
-  return request({
-    url: `/api/school-admin/evaluation-tasks/${taskId}/status`,
-    method: 'put',
-    params: { status }
-  })
-}
 
 /**
  * 删除评价任务
